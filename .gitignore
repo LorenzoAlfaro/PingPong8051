@@ -1,0 +1,14 @@
+
+
+*.lk
+*.lst
+*.rel
+*.rst
+*.sym
+*.map
+*.mem
+*.adf
+*.bin
+
+*.hex
+*.ihx
