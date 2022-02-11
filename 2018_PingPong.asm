@@ -50,6 +50,9 @@ C_O		DATA	32H		;Elemento a comparar
 
 O1		EQU	50H		;Direccion 2A, del bit 0			00000001
 O2		EQU	51H		;	00000010
+Result1		EQU	52H		;resultado logico donde se guarda		00000100
+Result2		EQU	53H		;	00001000
+
 	ORG	0
 
 	SJMP	START
