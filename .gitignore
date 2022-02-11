@@ -2,13 +2,17 @@
 
 *.lk
 *.lst
+*.lst~
 *.rel
 *.rst
 *.sym
 *.map
 *.mem
 *.adf
+*.adf~
 *.bin
+*.bin~
 
 *.hex
+*.hex~
 *.ihx
