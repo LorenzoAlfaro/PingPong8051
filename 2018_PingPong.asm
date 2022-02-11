@@ -3,31 +3,26 @@
 TAM_X	EQU	15
 TAM_Y	EQU	16
 
-PORT_A	EQU	02000H		;Direccion del puerto A en RAM Externa
-PORT_B	EQU	02001H		;Para referenciar se usa MOVX
-PORT_C	EQU	02002H
-Reg_Control	EQU	02003H	;Recibe palabra de control
+; PPI Ports addresses
+PORT_A		EQU	02000H		;Direccion del puerto A en RAM Externa
+PORT_B		EQU	02001H		;Para referenciar se usa MOVX
+PORT_C		EQU	02002H
+Reg_Control	EQU	02003H		;Recibe palabra de control
 
-POS_PAD1	EQU	0H	;position dela tableta en la pantalla
+POS_PAD1	EQU	0H		;position dela tableta en la pantalla
 POS_PAD2	EQU	0EH
-Y_T	DATA	1EH		;	variable temporal y
-P_T	DATA	1FH		;	Variable temporal de paleta
-PAD1	DATA	20H		;	;Variables de posicion de objetos
-PAD2	DATA	21H		;
-X	DATA	22H		;	OFFSET	para la MemoriaVIDEO
-Y	DATA	23H		;     OFFSET	para la LUT_BALL
-
-
-
+Y_T		DATA	1EH		;variable temporal y
+P_T		DATA	1FH		;Variable temporal de paleta
+PAD1		DATA	20H		;Variables de posicion de objetos
+PAD2		DATA	21H		;
+X		DATA	22H		;OFFSET	para la MemoriaVIDEO
+Y		DATA	23H		;OFFSET	para la LUT_BALL
 
 MemoriaViDEO	EQU	40H
 MemoriaVIDEO2	EQU	50H
 
 MemoriaViDEOA	EQU	41H
 MemoriaVIDEO2A	EQU	51H
-
-
-
 
 ADRE_PAD1A	EQU	40H
 ADRE_PAD1B	EQU	50H
