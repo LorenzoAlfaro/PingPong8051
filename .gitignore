@@ -12,7 +12,8 @@
 *.adf~
 *.bin
 *.bin~
-
+*.asm~
+*.mcu8051ide~
 *.hex
 *.hex~
 *.ihx
