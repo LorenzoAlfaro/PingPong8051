@@ -152,13 +152,13 @@ ADR_1:
 GRAFICO:
 	; This is a 8 x 8 loop, of just display
 	CALL	WRITE_VIDEO_MEMORY
-	mov 	R1,	#08H
+	MOV 	R1,	#08H
 Pause1a:
-	mov 	R2,	#08H
+	MOV 	R2,	#08H
 Pause2a:
 	CALL	WRITE_TO_PPI
-	djnz 	R2,	PAUSE2a
-	djnz 	R1,	PAUSE1a
+	DJNZ 	R2,	PAUSE2a
+	DJNZ 	R1,	PAUSE1a
 	;CALL	DELAY_0_2
 	JMP	READ_PUERTO
 ;--------------------------------------Ramas de la logica-------------------------
