@@ -17,3 +17,4 @@
 *.hex
 *.hex~
 *.ihx
+*.gpio

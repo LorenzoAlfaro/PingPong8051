@@ -57,7 +57,7 @@ Result2		EQU	53H		;	00001000
 
 	SJMP	START
 
-	ORG	30H		;Comienzo el programa saltando 
+	ORG	30H		;Comienzo el programa saltando
 	;los vectores
 START:
 
@@ -70,8 +70,8 @@ START:
 	MOV	A, #080H		; Esta palabara de control define A,B,C=outputs
 	MOV	DPTR, #REG_CONTROL	;Cargo direccion del registro de control
 	MOVX	@DPTR, A		;Programo el PPI
-	MOV	PAD1, #7		;Inicializo la posicion de las paletas
-	MOV	PAD2, #8		;maxima posicion es 12
+	MOV	PAD1, #7		;Inicializo la posicion de las paletas ; LEFT PAD
+	MOV	PAD2, #8		;maxima posicion es 12			; RIGHT PAD
 	MOV	X, #7
 	MOV	Y, #7
 	SETB	UL
@@ -129,6 +129,7 @@ AUL_1:	CALL	UP_LEFT
 ADR_1:	CALL	DWN_RIGHT
 ;--------------------------------------Paso a graficar-------------------
 GRAFICO:
+	; This is a 8 x 8 loop, of just display
 	CALL	WRITE_VIDEO_MEMORY
 		mov R1,#08H
 Pause1a: 	mov R2,#08H
@@ -482,7 +483,7 @@ Operacion_AND:
 	RET
 ;--------------------------------------
 ESTA_RANGO:
-				;Funcion logica para saber si un numero esta en un rango 1 < X  < 3 
+				;Funcion logica para saber si un numero esta en un rango 1 < X  < 3
 	PUSH	ACC
 	CLR	O1		;Limpio los bits del resultado anterior
 	CLR	O2
@@ -551,7 +552,7 @@ BORRAR:	MOV	@R0, #0
 LUT_BALL:	DB	0H,  80H,  40H, 20H,  10H,  8H,  4H,  2H,  1H,  0H,  0H,  0H,  0H,  0H,  0H,  0H
 
 	ORG	81EH
-LUT_BALL2:	DB	0H, 0H,    0H,  0H,  0H,    0H,  0H,  0H,  0H, 80H,  40H, 20H,  10H,  8H,  4H,  2H  
+LUT_BALL2:	DB	0H, 0H,    0H,  0H,  0H,    0H,  0H,  0H,  0H, 80H,  40H, 20H,  10H,  8H,  4H,  2H
 	;Uso esta tabla para mostrar la bola en la matriz
 	ORG	900H
 LUT_PAD:	DB	0H,  0F0H,  78H,  3CH,  1EH,  0FH,  7H,  3H,  1H,  0H,  0H,  0H,  0H
