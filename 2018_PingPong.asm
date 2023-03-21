@@ -1,3 +1,10 @@
+OR_MACRO MACRO OR_A, OR_B, Variable
+	MOV	A_O, 	#OR_A				;X=1 OR X=14    LA bola esta en zona de paleta?????
+	MOV	B_O, 	#OR_B
+	MOV	C_O, 	Variable
+	CALL	OR_2
+ENDM
+
 ;PROJECTO DE PING PONG POR LORENZO ALFARO y ALEJANDRO VARGAS ABRIL 2012
 ;Version 6, Uso un delays para el display
 TAM_X			EQU	15
@@ -101,21 +108,24 @@ D2:
 BALL_LOGIC:
 	MOV 	A, 	X				; DEBUG: Save X value
 	MOV	P3, 	A				; DEBUG: Print in port 3
-	MOV	A_O, 	#0				;X=0 OR X=14     ALGUIEN PERDIO?????
-	MOV	B_O, 	#14
-	MOV	C_O, 	X
-	CALL	OR_2
+	;MOV	A_O, 	#0				;X=0 OR X=14     ALGUIEN PERDIO?????
+	;MOV	B_O, 	#14
+	;MOV	C_O, 	X
+	;CALL	OR_2
+	OR_MACRO #0, #14, X
 	JB	RESULT1, LOST
-	MOV	A_O, 	#1				;X=1 OR X=14    LA bola esta en zona de paleta?????
-	MOV	B_O, 	#13
-	MOV	C_O, 	X
-	CALL	OR_2
+	;MOV	A_O, 	#1				;X=1 OR X=14    LA bola esta en zona de paleta?????
+	;MOV	B_O, 	#13
+	;MOV	C_O, 	X
+	;CALL	OR_2
+	OR_MACRO #1, #13, X
 	JB	RESULT1, ZONA_PALETA
-	MOV	A_O, 	#1				;y=0 OR y=14	LA bola esta en una pared???????????
-	MOV	B_O, 	#15
-	MOV	C_O, 	Y
-	CALL	OR_2
-	JB		RESULT1, CHOQUE_PARED
+	;MOV	A_O, 	#1				;y=0 OR y=14	LA bola esta en una pared???????????
+	;MOV	B_O, 	#15
+	;MOV	C_O, 	Y
+	;CALL	OR_2
+	OR_MACRO #1, #15, Y
+	JB	RESULT1, CHOQUE_PARED
 	;La bola sigue su curso--------------
 IGUAL:
 
@@ -180,10 +190,11 @@ A70:
 	MOV	C_O, 	Y
 	CALL	ESTA_RANGO
 	JNB	RESULT2, A60			;si no esta en el rango, continuo sin rebotar
-	MOV	A_O, 	#1
-	MOV	B_O, 	#15
+	;MOV	A_O, 	#1
+	;MOV	B_O, 	#15
 	;MOV	C_O, Y					;no es necesario
-	CALL	OR_2
+	;CALL	OR_2
+	OR_MACRO #1, #15, Y
 	JB	RESULT1, A50			;es un caso especial?? Si, entonces rebote en la esquina
 	MOV	C, 	DL
 	ORL	C, 	DR
