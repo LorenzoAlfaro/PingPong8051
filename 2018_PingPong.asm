@@ -196,25 +196,25 @@ CHOQUE_PARED:
 	JBC	UL, UL_1
 	JBC	DR, DR_1	; again, don't try to be too smart, just include this line, intead "falling" to the next part
 	JBC	DL,	DL_1
-	JMP	ACTION
+
 ;----------------------------------------------------------------------------
 DL_1:
 	CLR	DL
 	SETB	UL
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 UR_1:
 	SETB	DR
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 UL_1:
 	SETB	DL
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 DR_1:
 	SETB	UR
-	RET	
-	
+	JMP	ACTION
+
 ZONA_PALETA:
 ;	CALL	REBOTARA_PALETA
 ;REBOTARA_PALETA:
@@ -235,7 +235,7 @@ A70:
 	MOV	B_O, 	R3
 	MOV	C_O, 	Y
 	CALL	ESTA_RANGO
-	JNB	RESULT2, A60			;si no esta en el rango, continuo sin rebotar	
+	JNB	RESULT2, ACTION			;si no esta en el rango, continuo sin rebotar
 	OR_MACRO #1, #15, Y
 	JB	RESULT1, A50			;es un caso especial?? Si, entonces rebote en la esquina
 	MOV	C, 	DL
@@ -267,13 +267,10 @@ B60:
 	MOV	C, 	RESULT1
 	ORL	C, 	RESULT2
 	JC	A50						;si las dos condiciones se cumplen, pego en la esquina de la paleta
-	CALL	REBOTE_PALETA			;si no pego en plano
-	SJMP	A60
+	JMP	REBOTE_PALETA			;si no pego en plano
 A50:
-	CALL	REBOTE_ESQUINA
-A60:
-	;RET			;REGRESO
-	JMP	ACTION
+	JMP	REBOTE_ESQUINA
+
 ;----------------------------------------------------------------------------
 ;--------------------------------------
 Rebote_Esquina:
@@ -285,19 +282,19 @@ Rebote_Esquina:
 DL_11:
 	CLR	DL
 	SETB	UR
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 UR_11:
 	SETB	DL
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 UL_11:
 	SETB	DR
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 DR_11:
 	SETB	UL
-	RET
+	JMP	ACTION
 ;--------------------------------------
 Rebote_Paleta:
 	JBC	UR, 	UR_12
@@ -308,19 +305,19 @@ Rebote_Paleta:
 DL_12:
 	CLR	DL	; why only this one gets cleared? seems like a bug?
 	SETB	DR
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 UR_12:
 	SETB	UL
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 UL_12:
 	SETB	UR
-	RET
+	JMP	ACTION
 ;----------------------------------------------------------------------------
 DR_12:
 	SETB	DL
-	RET
+	JMP	ACTION
 ;--------------------------------------RUTINAS DE LOGICA-----------------------------------------------
 OR_2:
 ;Empiezo la logica de OR
