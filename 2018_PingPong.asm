@@ -1,3 +1,15 @@
+PAD_M MACRO PAD_A, LIMIT
+        LOCAL xyz
+        LOCAL zyx
+	MOV	R2, 	PAD_A
+	CJNE	R2, #LIMIT, xyz
+	SJMP	zyx						;TODO Logica de validacion que el pad no este en el limite
+xyz:
+	DEC	PAD_A
+zyx:
+	RET
+ENDM
+
 OR_MACRO MACRO OR_A, OR_B, Variable
 	MOV	A_O, 	#OR_A				;X=1 OR X=14    LA bola esta en zona de paleta?????
 	MOV	B_O, 	#OR_B
@@ -234,13 +246,15 @@ A60:
 
 ;--------------------------------------Movimientos de la tableta
 UP1:
-	MOV	R2, 	PAD1
-	CJNE	R2, #1, U90
-	SJMP	U100						;TODO Logica de validacion que el pad no este en el limite
-U90:
-	DEC	PAD1
-U100:
-	RET
+	PAD_M	PAD1, 1
+	;MOV	R2, 	PAD1
+	;CJNE	R2, #1, U90
+	;SJMP	U100						;TODO Logica de validacion que el pad no este en el limite
+;U90:
+	;DEC	PAD1
+;U100:
+
+;	RET
 ;----------------------------------------------------------------------------
 DW1:
 	MOV	R2, 	PAD1
@@ -252,13 +266,14 @@ U80:
 	RET
 ;----------------------------------------------------------------------------
 UP2:
-	MOV	R2, 	PAD2
-	CJNE	R2, #1, U50
-	SJMP	U60
-U50:
-	DEC	PAD2
-U60:
-	RET
+	PAD_M	PAD2, 1
+	;MOV	R2, 	PAD2
+	;CJNE	R2, #1, U50
+	;SJMP	U60
+;U50:
+;	DEC	PAD2
+;U60:
+;	RET
 ;----------------------------------------------------------------------------
 DW2:
 	MOV	R2, 	PAD2
