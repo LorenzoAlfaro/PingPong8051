@@ -151,21 +151,26 @@ ACTION:
 	JB	DR, ADR_1
 	JB 	DL, ADL_1	; trying to be smart, you just create unreadable code, this line could be commented out, but makes more sense
 ADL_1:
-	CALL	DWN_LEFT
+	DEC	X
+	INC	Y
 	JMP	READ_PUERTO ; SKIP GRAPH LOGIC
 	;SJMP	GRAFICO
 AUR_1:
-	CALL	UP_RIGHT
+	INC	X						;Lo incremento para ir a la derecha
+	DEC	Y						;Lo decremento para  SUBIR
 	JMP	READ_PUERTO ; SKIP GRAPH LOGIC
 	;SJMP	GRAFICO
 AUL_1:
-	CALL	UP_LEFT
+	DEC	X
+	DEC	Y
 	JMP	READ_PUERTO ; SKIP GRAPH LOGIC
 	;SJMP	GRAFICO
 ADR_1:
-	CALL	DWN_RIGHT
+	INC	X
+	INC	Y
 	JMP	READ_PUERTO ; SKIP GRAPH LOGIC
 	;SJMP	GRAFICO ; again, don't try to be too smart, just include this line for clarity
+
 ;--------------------------------------Paso a graficar-------------------
 GRAFICO:
 	; This is a 8 x 8 loop, of just display
@@ -378,8 +383,6 @@ UL_12:
 DR_12:
 	SETB	DL
 	RET
-;--------------------------------------
-CHOQUE_CON_PALETA:
 ;--------------------------------------RUTINAS DE LOGICA-----------------------------------------------
 OR_2:
 ;Empiezo la logica de OR
@@ -601,8 +604,6 @@ CLEAR_PPI:
 	POP	83H
 	POP 	82H
 	RET
-
-
 
 ;-------------------------------------------------------------------------------------------------
 ;Seccion de Las tablas para los graficos
