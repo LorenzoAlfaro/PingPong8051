@@ -142,9 +142,11 @@ BALL_LOGIC:
 IGUAL:
 
 ACTION:
-	JB	UR, 	AUR_1
-	JB	UL, 	AUL_1
-	JB	DR, 	ADR_1
+	; equivalent to a switch case where only at a time bit can be set UR, UL, DR, DL
+	JB	UR, AUR_1
+	JB	UL, AUL_1
+	JB	DR, ADR_1
+	JB 	DL, ADL_1	; trying to be smart, you just create unreadable code, this line could be commented out, but makes more sense
 ADL_1:
 	CALL	DWN_LEFT
 	JMP	READ_PUERTO ; SKIP GRAPH LOGIC
@@ -160,6 +162,7 @@ AUL_1:
 ADR_1:
 	CALL	DWN_RIGHT
 	JMP	READ_PUERTO ; SKIP GRAPH LOGIC
+	;SJMP	GRAFICO ; again, don't try to be too smart, just include this line for clarity
 ;--------------------------------------Paso a graficar-------------------
 GRAFICO:
 	; This is a 8 x 8 loop, of just display
@@ -307,7 +310,8 @@ DWN_LEFT:
 Rebote_Pared:
 	JBC	UR, 	UR_1
 	JBC	UL, 	UL_1
-	JBC	DR, 	DR_1
+	JBC	DR, 	DR_1	; again, don't try to be too smart, just include this line, intead "falling" to the next part
+	JBC	DL,	DL_1
 ;----------------------------------------------------------------------------
 DL_1:
 	CLR	DL
@@ -333,6 +337,7 @@ Rebote_Esquina:
 	JBC	UR, 	UR_11
 	JBC	UL, 	UL_11
 	JBC	DR, 	DR_11
+	JBC	DL, 	DL_11	; again, don't try to be too smart, just include this line, intead "falling" to the next part
 ;----------------------------------------------------------------------------
 DL_11:
 	CLR	DL
@@ -358,6 +363,7 @@ Rebote_Paleta:
 	JBC	UR, 	UR_12
 	JBC	UL, 	UL_12
 	JBC	DR, 	DR_12
+	JBC	DL,	DL_12		; again, don't try to be too smart, just include this line, intead "falling" to the next part
 ;----------------------------------------------------------------------------
 DL_12:
 	CLR	DL
