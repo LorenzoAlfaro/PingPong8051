@@ -7,7 +7,19 @@ PAD_M MACRO PAD_A, LIMIT
 xyz:
 	DEC	PAD_A
 zyx:
-	RET
+	;RET
+ENDM
+
+PAD_P MACRO PAD_A, LIMIT
+        LOCAL xyz
+        LOCAL zyx
+	MOV	R2, PAD_A
+	CJNE	R2, #LIMIT, xyz
+	SJMP	zyx						;TODO Logica de validacion que el pad no este en el limite
+xyz:
+	INC	PAD_A
+zyx:
+	;RET
 ENDM
 
 OR_MACRO MACRO OR_A, OR_B, Variable
@@ -102,20 +114,20 @@ READ_PUERTO:
 ;--------------------------------------LOGICA DE LAS TABLETAS-----------------------------
 ;Logica para  SUBE O BAJA PAD
 PAD1_UP_DOWN:
-	JB	UP_1, 	D1
+	JB	UP_1, 	D1    ;UP_1 is the P1.0
 	JNB	DOWN_1, PAD2_UP_DOWN
-	CALL	DW1
+	PAD_P    PAD1, 12
 D1:
 	JB	DOWN_1, PAD2_UP_DOWN
-	CALL	UP1
+	PAD_M    PAD1, 1
 
 PAD2_UP_DOWN:
 	JB	UP_2, 	D2
 	JNB	DOWN_2, BALL_LOGIC
-	CALL	DW2
+	PAD_P    PAD2, 12
 D2:
 	JB	DOWN_2, BALL_LOGIC
-	CALL	UP2
+	PAD_M    PAD2, 1
 ;--------------------------------------INICIA LOGICA de la bola-------------------------------------------------
 BALL_LOGIC:
 	MOV 	A, 	X				; DEBUG: Save X value
