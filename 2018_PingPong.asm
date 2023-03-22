@@ -84,17 +84,11 @@ Result1			EQU	52H				;resultado logico donde se guarda		00000100
 Result2			EQU	53H				;	00001000
 
 	ORG		0
-
 	SJMP	START
-
 	ORG		30H		;Comienzo el programa saltando los vectores
 START:
 
-;--------------------------------------Seccion de INICIALIZACION
-	;MOV	A_O, 	#0FFH
-	;MOV	B_O, 	#4
-	;MOV	C_O,	#3
-	;CALL	ESTA_RANGO
+;--------------------------------------Seccion de INICIALIZACION	
 	MOV	SP, 	#5FH
 	MOV	A, 	#080H			; Esta palabara de control define A,B,C=outputs
 	MOV	DPTR, 	#REG_CONTROL	; Cargo direccion del registro de control
@@ -171,53 +165,29 @@ ADR_1:
 	JMP	READ_PUERTO ; SKIP GRAPH LOGIC
 	;SJMP	GRAFICO ; again, don't try to be too smart, just include this line for clarity
 
-;--------------------------------------Paso a graficar-------------------
-GRAFICO:
-    CALL	CLEAR_VIDEO_MEMORY
-	; This is a 8 x 8 loop, of just display
-	CALL	WRITE_VIDEO_MEMORY
-	MOV 	R1,	#04H
-Pause1a:
-	MOV 	R2,	#04H
-Pause2a:
-	CALL	WRITE_TO_PPI
-	DJNZ 	R2,	PAUSE2a
-	DJNZ 	R1,	PAUSE1a
-	;CALL	DELAY_0_2
-	JMP	READ_PUERTO    ; This complete the game loop
 ;--------------------------------------Ramas de la logica-------------------------
 LOST:
 	JMP	START
 CHOQUE_PARED:
-	;CALL	REBOTE_PARED
-    ;--------------------------------------Rebotes de la bola------------------------------------------
-;Rebote_Pared:
 	JBC	UR, UR_1
 	JBC	UL, UL_1
 	JBC	DR, DR_1	; again, don't try to be too smart, just include this line, intead "falling" to the next part
 	JBC	DL,	DL_1
-
-;----------------------------------------------------------------------------
 DL_1:
 	CLR	DL
 	SETB	UL
 	JMP	ACTION
-;----------------------------------------------------------------------------
 UR_1:
 	SETB	DR
 	JMP	ACTION
-;----------------------------------------------------------------------------
 UL_1:
 	SETB	DL
 	JMP	ACTION
-;----------------------------------------------------------------------------
 DR_1:
 	SETB	UR
 	JMP	ACTION
 
 ZONA_PALETA:
-;	CALL	REBOTARA_PALETA
-;REBOTARA_PALETA:
 	;la logica mas compleja es la de la bola
 	MOV	R2, 	X
 	CJNE	R2, #1, PALETA_2	;cual es la paleta en cuestion
@@ -271,53 +241,44 @@ B60:
 A50:
 	JMP	REBOTE_ESQUINA
 
-;----------------------------------------------------------------------------
-;--------------------------------------
-Rebote_Esquina:
+REBOTE_ESQUINA:
 	JBC	UR, 	UR_11
 	JBC	UL, 	UL_11
 	JBC	DR, 	DR_11
 	JBC	DL, 	DL_11	; again, don't try to be too smart, just include this line, intead "falling" to the next part
-;----------------------------------------------------------------------------
 DL_11:
 	CLR	DL
 	SETB	UR
 	JMP	ACTION
-;----------------------------------------------------------------------------
 UR_11:
 	SETB	DL
 	JMP	ACTION
-;----------------------------------------------------------------------------
 UL_11:
 	SETB	DR
 	JMP	ACTION
-;----------------------------------------------------------------------------
 DR_11:
 	SETB	UL
 	JMP	ACTION
-;--------------------------------------
-Rebote_Paleta:
-	JBC	UR, 	UR_12
-	JBC	UL, 	UL_12
-	JBC	DR, 	DR_12
+
+REBOTE_PALETA:
+	JBC	UR, UR_12
+	JBC	UL, UL_12
+	JBC	DR, DR_12
 	JBC	DL,	DL_12		; again, don't try to be too smart, just include this line, intead "falling" to the next part
-;----------------------------------------------------------------------------
 DL_12:
 	CLR	DL	; why only this one gets cleared? seems like a bug?
 	SETB	DR
 	JMP	ACTION
-;----------------------------------------------------------------------------
 UR_12:
 	SETB	UL
 	JMP	ACTION
-;----------------------------------------------------------------------------
 UL_12:
 	SETB	UR
 	JMP	ACTION
-;----------------------------------------------------------------------------
 DR_12:
 	SETB	DL
 	JMP	ACTION
+	
 ;--------------------------------------RUTINAS DE LOGICA-----------------------------------------------
 OR_2:
 ;Empiezo la logica de OR
@@ -406,6 +367,20 @@ Delay_0_2:
 	POP	1
 	POP	0
 	RET
+;--------------------------------------Paso a graficar-------------------
+GRAFICO:
+    CALL	CLEAR_VIDEO_MEMORY
+	; This is a 8 x 8 loop, of just display
+	CALL	WRITE_VIDEO_MEMORY
+	MOV 	R1,	#04H
+Pause1a:
+	MOV 	R2,	#04H
+Pause2a:
+	CALL	WRITE_TO_PPI
+	DJNZ 	R2,	PAUSE2a
+	DJNZ 	R1,	PAUSE1a
+	;CALL	DELAY_0_2
+	JMP	READ_PUERTO    ; This complete the game loop
 ;----------------------------------------------------------------------------
 WRITE_VIDEO_MEMORY:
 	PUSH	0
