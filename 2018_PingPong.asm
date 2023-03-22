@@ -110,7 +110,7 @@ READ_PUERTO:
 	;CALL    delay_0_2				;lee el switch cada 0.2 segundos
 	ANL	A,	#00FH
 	MOV	R7, 	A				; Make copy in R7 for comparisons
-	CALL	CLEAR_VIDEO_MEMORY
+	;CALL	CLEAR_VIDEO_MEMORY
 ;--------------------------------------LOGICA DE LAS TABLETAS-----------------------------
 ;Logica para  SUBE O BAJA PAD
 PAD1_UP_DOWN:
@@ -173,6 +173,7 @@ ADR_1:
 
 ;--------------------------------------Paso a graficar-------------------
 GRAFICO:
+    CALL	CLEAR_VIDEO_MEMORY
 	; This is a 8 x 8 loop, of just display
 	CALL	WRITE_VIDEO_MEMORY
 	MOV 	R1,	#04H
