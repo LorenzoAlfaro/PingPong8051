@@ -132,23 +132,14 @@ D2:
 BALL_LOGIC:
 	MOV 	A, 	X				; DEBUG: Save X value
 	MOV	P3, 	A				; DEBUG: Print in port 3
-	;MOV	A_O, 	#0				;X=0 OR X=14     ALGUIEN PERDIO?????
-	;MOV	B_O, 	#14
-	;MOV	C_O, 	X
-	;CALL	OR_2
-	OR_MACRO #0, #14, X
+
+	OR_MACRO #0, #14, X    ;X=0 OR X=14     ALGUIEN PERDIO?????
 	JB	RESULT1, LOST
-	;MOV	A_O, 	#1				;X=1 OR X=14    LA bola esta en zona de paleta?????
-	;MOV	B_O, 	#13
-	;MOV	C_O, 	X
-	;CALL	OR_2
-	OR_MACRO #1, #13, X
+
+	OR_MACRO #1, #13, X    ;X=1 OR X=13    LA bola esta en zona de paleta?????
 	JB	RESULT1, ZONA_PALETA
-	;MOV	A_O, 	#1				;y=0 OR y=14	LA bola esta en una pared???????????
-	;MOV	B_O, 	#15
-	;MOV	C_O, 	Y
-	;CALL	OR_2
-	OR_MACRO #1, #15, Y
+
+	OR_MACRO #1, #15, Y    ;y=0 OR y=14	LA bola esta en una pared???????????
 	JB	RESULT1, CHOQUE_PARED
 	;La bola sigue su curso--------------
 IGUAL:
