@@ -175,26 +175,48 @@ ADR_1:
 GRAFICO:
 	; This is a 8 x 8 loop, of just display
 	CALL	WRITE_VIDEO_MEMORY
-	MOV 	R1,	#08H
+	MOV 	R1,	#04H
 Pause1a:
-	MOV 	R2,	#08H
+	MOV 	R2,	#04H
 Pause2a:
 	CALL	WRITE_TO_PPI
 	DJNZ 	R2,	PAUSE2a
 	DJNZ 	R1,	PAUSE1a
 	;CALL	DELAY_0_2
-	JMP	READ_PUERTO
+	JMP	READ_PUERTO    ; This complete the game loop
 ;--------------------------------------Ramas de la logica-------------------------
-Lost:
+LOST:
 	JMP	START
 CHOQUE_PARED:
-	CALL	REBOTE_PARED
-	JMP	ACTION
-ZONA_PALETA:
-	CALL	REBOTARA_PALETA
+	;CALL	REBOTE_PARED
+    ;--------------------------------------Rebotes de la bola------------------------------------------
+;Rebote_Pared:
+	JBC	UR, UR_1
+	JBC	UL, UL_1
+	JBC	DR, DR_1	; again, don't try to be too smart, just include this line, intead "falling" to the next part
+	JBC	DL,	DL_1
 	JMP	ACTION
 ;----------------------------------------------------------------------------
-REBOTARA_PALETA:
+DL_1:
+	CLR	DL
+	SETB	UL
+	RET
+;----------------------------------------------------------------------------
+UR_1:
+	SETB	DR
+	RET
+;----------------------------------------------------------------------------
+UL_1:
+	SETB	DL
+	RET
+;----------------------------------------------------------------------------
+DR_1:
+	SETB	UR
+	RET	
+	
+ZONA_PALETA:
+;	CALL	REBOTARA_PALETA
+;REBOTARA_PALETA:
 	;la logica mas compleja es la de la bola
 	MOV	R2, 	X
 	CJNE	R2, #1, PALETA_2	;cual es la paleta en cuestion
@@ -212,11 +234,7 @@ A70:
 	MOV	B_O, 	R3
 	MOV	C_O, 	Y
 	CALL	ESTA_RANGO
-	JNB	RESULT2, A60			;si no esta en el rango, continuo sin rebotar
-	;MOV	A_O, 	#1
-	;MOV	B_O, 	#15
-	;MOV	C_O, Y					;no es necesario
-	;CALL	OR_2
+	JNB	RESULT2, A60			;si no esta en el rango, continuo sin rebotar	
 	OR_MACRO #1, #15, Y
 	JB	RESULT1, A50			;es un caso especial?? Si, entonces rebote en la esquina
 	MOV	C, 	DL
@@ -253,90 +271,9 @@ B60:
 A50:
 	CALL	REBOTE_ESQUINA
 A60:
-	RET			;REGRESO
-
-;--------------------------------------Movimientos de la tableta
-UP1:
-	PAD_M	PAD1, 1
-	;MOV	R2, 	PAD1
-	;CJNE	R2, #1, U90
-	;SJMP	U100						;TODO Logica de validacion que el pad no este en el limite
-;U90:
-	;DEC	PAD1
-;U100:
-
-;	RET
+	;RET			;REGRESO
+	JMP	ACTION
 ;----------------------------------------------------------------------------
-DW1:
-	MOV	R2, 	PAD1
-	CJNE	R2, #12, U70
-	SJMP	U80
-U70:
-	INC	PAD1
-U80:
-	RET
-;----------------------------------------------------------------------------
-UP2:
-	PAD_M	PAD2, 1
-	;MOV	R2, 	PAD2
-	;CJNE	R2, #1, U50
-	;SJMP	U60
-;U50:
-;	DEC	PAD2
-;U60:
-;	RET
-;----------------------------------------------------------------------------
-DW2:
-	MOV	R2, 	PAD2
-	CJNE	R2, #12, U30
-	SJMP	U40
-U30:
-	INC	PAD2
-U40:
-	RET
-;--------------------------------------Movimientos de la bola-------------------------------------------
-UP_RIGHT:
-	INC	X						;Lo incremento para ir a la derecha
-	DEC	Y						;Lo decremento para  SUBIR
-	RET
-;----------------------------------------------------------------------------
-UP_LEFT:
-	DEC	X
-	DEC	Y
-	RET
-;----------------------------------------------------------------------------
-DWN_RIGHT:
-	INC	X
-	INC	Y
-	RET
-;----------------------------------------------------------------------------
-DWN_LEFT:
-	DEC	X
-	INC	Y
-	RET
-;--------------------------------------Rebotes de la bola------------------------------------------
-Rebote_Pared:
-	JBC	UR, 	UR_1
-	JBC	UL, 	UL_1
-	JBC	DR, 	DR_1	; again, don't try to be too smart, just include this line, intead "falling" to the next part
-	JBC	DL,	DL_1
-;----------------------------------------------------------------------------
-DL_1:
-	CLR	DL
-	SETB	UL
-	RET
-;----------------------------------------------------------------------------
-UR_1:
-	SETB	DR
-	RET
-;----------------------------------------------------------------------------
-UL_1:
-	SETB	DL
-	RET
-;----------------------------------------------------------------------------
-DR_1:
-	SETB	UR
-	RET
 ;--------------------------------------
 Rebote_Esquina:
 	JBC	UR, 	UR_11
