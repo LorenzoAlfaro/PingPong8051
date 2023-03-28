@@ -199,7 +199,7 @@ DR_1:
 ZONA_PALETA:
 	;la logica mas compleja es la de la bola
 	MOV	R2, 	X
-	CJNE	R2, LEFT_PAD_ZONE, PALETA_2	;cual es la paleta en cuestion
+	CJNE R2, #LEFT_PAD_ZONE, PALETA_2	;cual es la paleta en cuestion
 	MOV	P_T,	PAD1
 	SJMP	A70
 PALETA_2:
