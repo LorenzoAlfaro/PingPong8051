@@ -28,57 +28,69 @@ ENDM
 
 ;PROJECTO DE PING PONG POR LORENZO ALFARO y ALEJANDRO VARGAS ABRIL 2012
 ;Version 6, Uso un delays para el display
-TAM_X			EQU	15
-TAM_Y			EQU	16
+PAD_SIZE EQU 4
+TAM_X	EQU	15
+TAM_Y	EQU	16
+LEFT_BORDER EQU 0
+RIGHT_BORDER EQU TAM_X -1
 
-									; PPI Ports addresses
-PORT_A			EQU	02000H			; Direccion del puerto A en RAM Externa
-PORT_B			EQU	02001H			; Para referenciar se usa MOVX
-PORT_C			EQU	02002H
-Reg_Control		EQU	02003H			; Recibe palabra de control
+LEFT_PAD_ZONE EQU 1
+RIGHT_PAD_ZONE EQU TAM_X -2
 
-POS_PAD1		EQU	0H				; position dela tableta en la pantalla
-POS_PAD2		EQU	0EH
-Y_T			DATA	1EH			;variable temporal y
-P_T			DATA	1FH			;Variable temporal de paleta
-PAD1			DATA	20H			;Variables de posicion de objetos
-PAD2			DATA	21H			;
-X			DATA	22H			;OFFSET	para la MemoriaVIDEO
-Y			DATA	23H			;OFFSET	para la LUT_BALL
+UP_WALL_ZONE EQU 1
+DN_WALL_ZONE EQU TAM_Y - 1
 
-MemoriaViDEO		EQU	40H
-MemoriaVIDEO2		EQU	50H
+PAD_UP_LIMIT EQU UP_WALL_ZONE
+PAD_DN_LIMIT EQU TAM_Y - PAD_SIZE
 
-MemoriaViDEOA		EQU	41H
-MemoriaVIDEO2A		EQU	51H
+; PPI Ports addresses
+PORT_A	EQU	02000H			; Direccion del puerto A en RAM Externa
+PORT_B	EQU	02001H			; Para referenciar se usa MOVX
+PORT_C	EQU	02002H
+Reg_Control	EQU	02003H			; Recibe palabra de control
 
-ADRE_PAD1A		EQU	40H
-ADRE_PAD1B		EQU	50H
+POS_PAD1	EQU	0H				; position dela tableta en la pantalla
+POS_PAD2	EQU	0EH
+Y_T	DATA	1EH			;variable temporal y
+P_T	DATA	1FH			;Variable temporal de paleta
+PAD1	DATA	20H			;Variables de posicion de objetos
+PAD2	DATA	21H			;
+X	DATA	22H			;OFFSET	para la MemoriaVIDEO
+Y	DATA	23H			;OFFSET	para la LUT_BALL
 
-ADRE_PAD2A		EQU	4EH
-ADRE_PAD2B		EQU	5EH
+A_O	DATA	30H			; Almacenamiento temporal para los operandos de la or de alto nivel
+B_O	DATA	31H
+C_O	DATA	32H			; Elemento a comparar
 
-SW				EQU	P1
-UP_1			EQU	P1.0
-DOWN_1			EQU	P1.1
-UP_2			EQU	P1.2
-DOWN_2			EQU	P1.3
+MemoriaViDEO    EQU    40H
+MemoriaVIDEO2    EQU    50H
 
-UR			EQU	48H				; 00000001 RAM 29 Indican la direccion de la bola, SOLAMENTE puede estar uno
-UL			EQU	49H				; 00000010
-DR			EQU	4AH				; 00000100 pg 181
-DL			EQU	4BH				; 00001000
-UP			EQU	4CH				; 00010000
-DOWN			EQU	4DH				; 00100000
+MemoriaViDEOA    EQU    41H
+MemoriaVIDEO2A    EQU    51H
 
-A_O			DATA 	30H			; Almacenamiento temporal para los operandos de la or de alto nivel
-B_O			DATA 	31H
-C_O			DATA 	32H			; Elemento a comparar
+ADRE_PAD1A    EQU    40H
+ADRE_PAD1B    EQU    50H
 
-O1			EQU	50H				;Direccion 2A, del bit 0			00000001
-O2			EQU	51H				;	00000010
-Result1			EQU	52H				;resultado logico donde se guarda		00000100
-Result2			EQU	53H				;	00001000
+ADRE_PAD2A    EQU    4EH
+ADRE_PAD2B    EQU    5EH
+
+SW	EQU	P1
+UP_1	EQU	P1.0
+DOWN_1	EQU	P1.1
+UP_2	EQU	P1.2
+DOWN_2	EQU	P1.3
+
+UR	EQU	48H				; 00000001 RAM 29 Indican la direccion de la bola, SOLAMENTE puede estar uno
+UL	EQU	49H				; 00000010
+DR	EQU	4AH				; 00000100 pg 181
+DL	EQU	4BH				; 00001000
+UP	EQU	4CH				; 00010000
+DOWN	EQU	4DH				; 00100000
+
+O1	EQU	50H				;Direccion 2A, del bit 0			00000001
+O2	EQU	51H				;	00000010
+Result1	EQU	52H				;resultado logico donde se guarda		00000100
+Result2	EQU	53H				;	00001000
 
 	ORG		0
 	SJMP	START
@@ -86,9 +98,9 @@ Result2			EQU	53H				;	00001000
 START:
 
 ;--------------------------------------Seccion de INICIALIZACION
-	MOV	SP, 	#5FH
+	MOV	SP,    #5FH
 	MOV	A, 	#080H			; Esta palabara de control define A,B,C=outputs
-	MOV	DPTR, 	#REG_CONTROL	; Cargo direccion del registro de control
+	MOV	DPTR,	#REG_CONTROL	; Cargo direccion del registro de control
 	MOVX	@DPTR, 	A				; Programo el PPI
 	MOV	PAD1, 	#7				; Inicializo la posicion de las paletas ; LEFT PAD
 	MOV	PAD2, 	#8				; maxima posicion es 12			; RIGHT PAD
@@ -97,40 +109,40 @@ START:
 	SETB	UL
 ;--------------------------------------TOMA DE DECICIONES LEYENDO P1
 READ_PUERTO:
-	MOV	A, 	SW				; Read input port
-	;CALL    delay_0_2				;lee el switch cada 0.2 segundos
-	ANL	A,	#00FH
-	MOV	R7, 	A				; Make copy in R7 for comparisons
+	MOV	A,	SW				; Read input port
+	;CALL    delay_0_2		; lee el switch cada 0.2 segundos
+	ANL	A,	#0FH ; Apply Mask 00001111
+	MOV	R7,	A	; Make copy in R7 for comparisons
 	;CALL	CLEAR_VIDEO_MEMORY
 ;--------------------------------------LOGICA DE LAS TABLETAS-----------------------------
 ;Logica para  SUBE O BAJA PAD
 PAD1_UP_DOWN:
-	JB	UP_1, 	D1    ;UP_1 is the P1.0
-	JNB	DOWN_1, PAD2_UP_DOWN
-	PAD_P    PAD1, 12
+	JB	UP_1,	D1    ;UP_1 is the P1.0
+	JNB	DOWN_1,	PAD2_UP_DOWN
+	PAD_P	PAD1,	PAD_DN_LIMIT
 D1:
 	JB	DOWN_1, PAD2_UP_DOWN
-	PAD_M    PAD1, 1
+	PAD_M    PAD1, PAD_UP_LIMIT
 
 PAD2_UP_DOWN:
 	JB	UP_2, 	D2
 	JNB	DOWN_2, BALL_LOGIC
-	PAD_P    PAD2, 12
+	PAD_P    PAD2, PAD_DN_LIMIT
 D2:
 	JB	DOWN_2, BALL_LOGIC
-	PAD_M    PAD2, 1
+	PAD_M    PAD2, PAD_UP_LIMIT
 ;--------------------------------------INICIA LOGICA de la bola-------------------------------------------------
 BALL_LOGIC:
-	MOV 	A, 	X				; DEBUG: Save X value
-	MOV	P3, 	A				; DEBUG: Print in port 3
+	MOV A, X				; DEBUG: Save X value
+	MOV P3, A				; DEBUG: Print in port 3
 
-	OR_MACRO #0, #14, X    ;X=0 OR X=14     ALGUIEN PERDIO?????
+	OR_MACRO LEFT_BORDER, RIGHT_BORDER, X    ;X=0 OR X=14     ALGUIEN PERDIO?????
 	JB	RESULT1, LOST
 
-	OR_MACRO #1, #13, X    ;X=1 OR X=13    LA bola esta en zona de paleta?????
+	OR_MACRO LEFT_PAD_ZONE, RIGHT_PAD_ZONE, X    ;X=1 OR X=13    LA bola esta en zona de paleta?????
 	JB	RESULT1, ZONA_PALETA
 
-	OR_MACRO #1, #15, Y    ;y=0 OR y=14	LA bola esta en una pared???????????
+	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y    ;y=1 OR y=15	LA bola esta en una pared???????????
 	JB	RESULT1, CHOQUE_PARED
 	;La bola sigue su curso--------------
 IGUAL:
@@ -187,7 +199,7 @@ DR_1:
 ZONA_PALETA:
 	;la logica mas compleja es la de la bola
 	MOV	R2, 	X
-	CJNE	R2, #1, PALETA_2	;cual es la paleta en cuestion
+	CJNE	R2, LEFT_PAD_ZONE, PALETA_2	;cual es la paleta en cuestion
 	MOV	P_T,	PAD1
 	SJMP	A70
 PALETA_2:
@@ -203,7 +215,7 @@ A70:
 	MOV	C_O, 	Y
 	CALL	ESTA_RANGO
 	JNB	RESULT2, ACTION			;si no esta en el rango, continuo sin rebotar
-	OR_MACRO #1, #15, Y
+	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
 	JB	RESULT1, A50			;es un caso especial?? Si, entonces rebote en la esquina
 	MOV	C, 	DL
 	ORL	C, 	DR
