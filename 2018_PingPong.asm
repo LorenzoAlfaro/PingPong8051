@@ -30,8 +30,8 @@ ENDM
 ;Version 6, Uso un delays para el display
 SPRITE_RENDER EQU 1 ; times the sprite
 PAD_SIZE EQU 4
-TAM_X EQU	15
-TAM_Y EQU	16
+TAM_X EQU	8 ; 15
+TAM_Y EQU	9 ; 16
 LEFT_BORDER EQU 0
 RIGHT_BORDER EQU TAM_X -1
 
@@ -56,24 +56,24 @@ Reg_Control EQU	02003H			; Recibe palabra de control
 P_T	DATA 1FH			;Variable temporal de paleta
 PAD1 DATA 20H			;Variables de posicion de objetos
 PAD2 DATA 21H			;
-X DATA 22H			;OFFSET	para la MemoriaVIDEO
+X DATA 22H			;OFFSET	para la MEMORIAVIDEO
 Y DATA 23H			;OFFSET	para la LUT_BALL
 
 A_O DATA 30H			; Almacenamiento temporal para los operandos de la or de alto nivel
 B_O DATA 31H
 C_O DATA 32H			; Elemento a comparar
 
-MemoriaViDEO EQU 40H
-MemoriaVIDEO2 EQU 50H
+MEMORIAVIDEO EQU 40H
+MEMORIAVIDEO2 EQU 50H
 
-MemoriaViDEOA EQU 41H
-MemoriaVIDEO2A EQU 51H
+;MemoriaViDEOA EQU 41H
+;MemoriaVIDEO2A EQU 51H
 
-ADRE_PAD1A EQU 40H
-ADRE_PAD1B EQU 50H
+ADRE_PAD1A EQU MEMORIAVIDEO
+ADRE_PAD1B EQU MEMORIAVIDEO2
 
-ADRE_PAD2A EQU 4EH
-ADRE_PAD2B EQU 5EH
+ADRE_PAD2A EQU ADRE_PAD1A + TAM_X -1; 4EH for size 15x15
+ADRE_PAD2B EQU ADRE_PAD1B + TAM_X -1; 5EH for size 15x15
 
 SW EQU P1
 UP_1 EQU P1.0
@@ -102,11 +102,11 @@ START:
 	MOV	SP, #5FH
 	MOV	A, #080H			; Esta palabara de control define A,B,C=outputs
 	MOV	DPTR, #REG_CONTROL	; Cargo direccion del registro de control
-	MOVX @DPTR, A				; Programo el PPI
-	MOV	PAD1, #7				; Inicializo la posicion de las paletas ; LEFT PAD
-	MOV	PAD2, #8				; maxima posicion es 12			; RIGHT PAD
-	MOV	X, #7
-	MOV	Y, #7
+	;MOVX @DPTR, A				; Programo el PPI ; add this when using 15x15 with PPI
+	MOV	PAD1, #1				; 7 Inicializo la posicion de las paletas ; LEFT PAD
+	MOV	PAD2, #1				; 8 maxima posicion es 12			; RIGHT PAD
+	MOV	X, #3 ; 7 for 15x15
+	MOV	Y, #3 ; 7 for 15x15
 	SETB UL
 ;--------------------------------------TOMA DE DECICIONES LEYENDO P1
 READ_PUERTO:

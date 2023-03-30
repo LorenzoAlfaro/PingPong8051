@@ -85,37 +85,46 @@ BORRAR:
 	RET
 
 WRITE_TO_PPI:
-
+	; TODO: write WRITE_TO_PORT
 	PUSH ACC
 	PUSH 0
 	PUSH 1
 	PUSH 2
+	PUSH 3
 	PUSH 82H
 	PUSH 83H
 
-	MOV R2, #0FH ; Start with 15, and decrement
+	MOV R2, #TAM_X ; Start with 15, and decrement
 	MOV R0, #MEMORIAVIDEO
 	MOV R1, #MEMORIAVIDEO2
+	MOV R3, #01111111B				; DEBUG: Save X value
 
 AA90:
-	CALL CLEAR_PPI
+	;CALL CLEAR_PPI
 
 	MOV DPTR, #PORT_C	; mando el valor de la columna
-	MOV A, R2
-	MOVX @DPTR, A ; TODO: move port be to last, and use INC DPTR instead of MOV	DPTR, #PORT_C
+
+	MOV A, R3 ; keep track of the shifting column
+	MOV P0, A ; output column ON
+	RR A ; Shift the zero to the right
+	MOV R3, A ; store A
+	;MOVX @DPTR, A ; TODO: move port be to last, and use INC DPTR instead of MOV	DPTR, #PORT_C
 	; PORT_C = COLUMN VALUE FOR MUX
 
 	MOV DPTR, #PORT_A
 
-	MOV A, @R0
-	MOVX @DPTR, A
+	MOV A, @R0 ; get sprite
+	;MOVX @DPTR, A ; add this for 15x15 ppi display
+	MOV P2, A ; display sprite
+	MOV P0, #0FFH ; clear column
+	MOV P2, #00H ; clear sprite
 	; PORT_A = SPRITE_A
 	INC R0
 
 	INC DPTR ; apunto a PUERTO B -- same as MOV DPTR, #PORT_B
 
 	MOV A, @R1
-	MOVX @DPTR, A
+	;MOVX @DPTR, A ; add this for 15x15 ppi display
 	; PORT_B = SPRITE_B
 	INC R1
 
@@ -123,6 +132,7 @@ AA90:
 
 	POP 83H
 	POP 82H
+	POP 3
 	POP 2
 	POP 1
 	POP 0
