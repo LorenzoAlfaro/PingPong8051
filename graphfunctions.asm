@@ -72,16 +72,21 @@ WRITE_VIDEO_MEMORY:
 CLEAR_VIDEO_MEMORY:
 	PUSH 0
 	PUSH 1
+	PUSH 2
 
-	MOV R1, #30 ; TODO clean the SPRITE memory in two loops, instead of 1, that way memory_a and memory_b doesn't have to be contingous
+	MOV R2, #TAM_X ; TODO clean the SPRITE memory in two loops, instead of 1, that way memory_a and memory_b doesn't have to be contingous
 	MOV R0, #MEMORIAVIDEO
+	MOV R1, #MEMORIAVIDEO2
 BORRAR:
 	MOV @R0, #0
+	MOV @R1, #0
 	INC R0
-	DJNZ R1, BORRAR
+	INC R1
+	DJNZ R2, BORRAR
 
 	POP 1
 	POP 0
+	POP 2
 	RET
 
 WRITE_TO_PPI:
