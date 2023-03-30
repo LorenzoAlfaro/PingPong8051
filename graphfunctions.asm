@@ -106,6 +106,8 @@ WRITE_TO_PPI:
 
 AA90:
 	;CALL CLEAR_PPI
+	MOV P0, #0FFH ; clear column
+	MOV P2, #00H ; clear sprite
 
 	MOV DPTR, #PORT_C	; mando el valor de la columna
 
@@ -121,8 +123,10 @@ AA90:
 	MOV A, @R0 ; get sprite
 	;MOVX @DPTR, A ; add this for 15x15 ppi display
 	MOV P2, A ; display sprite
+
 	MOV P0, #0FFH ; clear column
 	MOV P2, #00H ; clear sprite
+	
 	; PORT_A = SPRITE_A
 	INC R0
 
