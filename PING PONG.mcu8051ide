@@ -236,9 +236,9 @@
 			auto_sw_enabled="1"
 			/>
 		<graph
-			grid="y"
+			grid="n"
 			magnification="0"
-			enabled="0"
+			enabled="1"
 			marks_s="X0000000000000000000000000000000000000000000"
 			marks_l="X0000000000000000000000000000000000000000000"
 			marks_o="X0000000000000000000000000000000000000000000"
@@ -262,18 +262,18 @@
 		/>
 	</general>
 	<other_options><![CDATA[]]></other_options>
-	<compiler_options><![CDATA[{_title 0 _list 0 _print 0 _nomod 0 max_ihex_rec_length 16 _object 0 _pagelength 0 QUIET 0 _symbols 0 CREATE_SIM_FILE 1 CREATE_BIN_FILE 1 _pagewidth 0 optim_ena 0 _date 0 _paging 0 WARNING_LEVEL 0} 0 {--verbose 1 -i {} custom {} --columns 0 --omf-51 0} {adf 1} {-L 1 -M 0 custom {} -n 0 -P 0 -A 0 -a 0 -r {} -C 0 -c 0 -s 1 -U 0 -u 0 -g MAP -w 0 -cpu 8051 -x 0 -h 0 -quiet 0 -i {} -I 1} {ihex 1 adf 1} {--out-fmt-s19 0 --fdollars-in-identifiers 0 --nogcse 0 --nooverlay 1 --no-peep-comments 0 --no-c-code-in-asm 0 --print-search-dirs 0 --nostdlib 0 --compile-only 0 --peep-asm 0 --nolabelopt 0 --short-is-8bits 0 --cyclomatic 0 --no-reg-params 0 --noinvariant 0 --profile 0 --out-fmt-ihx 0 --noinduction 1 --opt-code-size 0 --nojtbound 0 --no-peep 0 --less-pedantic 0 --no-xinit-opt 0 --xstack 0 --funsigned-char 0 --verbose 1 -S 0 --debug 1 --preprocessonly 0 --opt-code-speed 0 --parms-in-bank1 0 --float-reent 0 -V 1 --c1mode 0 --fverbose-asm 0 --fommit-frame-pointer 0 --xram-movc 0 --main-return 0 --nostdinc 0 --noloopreverse 0 --stack-probe 0 --all-callee-saves 0 --int-long-reent 0 --stack-auto 0 --use-stdout 0} {standard --std-sdcc89 model --model-small stack --pack-iram custom {}} {--stack-size {} --code-loc {} --constseg {} --codeseg {} --xram-loc {} --data-loc {} --stack-loc {} --xstack-loc {} --lib-path {}} {--disable-warning {} -L {} -l {} -I {}} {-l 1 -A {} custom {} -F hex} {adf 1}]]></compiler_options>
+	<compiler_options><![CDATA[{_title 0 _list 0 _print 0 _nomod 0 max_ihex_rec_length 16 _object 0 _pagelength 0 QUIET 0 _symbols 0 CREATE_SIM_FILE 1 CREATE_BIN_FILE 1 optim_ena 0 _pagewidth 0 WARNING_LEVEL 0 _paging 0 _date 0} 0 {--verbose 1 -i {} --omf-51 0 --columns 0 custom {}} {adf 1} {-L 1 -M 0 custom {} -n 0 -P 0 -A 0 -a 0 -r {} -C 0 -c 0 -s 1 -u 0 -U 0 -w 0 -g MAP -quiet 0 -h 0 -x 0 -cpu 8051 -I 1 -i {}} {ihex 1 adf 1} {--out-fmt-s19 0 --fdollars-in-identifiers 0 --nogcse 0 --nooverlay 1 --no-peep-comments 0 --no-c-code-in-asm 0 --print-search-dirs 0 --nostdlib 0 --peep-asm 0 --nolabelopt 0 --short-is-8bits 0 --cyclomatic 0 --compile-only 0 --profile 0 --noinvariant 0 --no-reg-params 0 --noinduction 1 --out-fmt-ihx 0 --nojtbound 0 --opt-code-size 0 --less-pedantic 0 --no-peep 0 -S 0 --verbose 1 --funsigned-char 0 --xstack 0 --no-xinit-opt 0 --debug 1 --preprocessonly 0 --c1mode 0 -V 1 --float-reent 0 --parms-in-bank1 0 --opt-code-speed 0 --nostdinc 0 --main-return 0 --xram-movc 0 --fommit-frame-pointer 0 --fverbose-asm 0 --int-long-reent 0 --all-callee-saves 0 --stack-probe 0 --noloopreverse 0 --stack-auto 0 --use-stdout 0} {model --model-small standard --std-sdcc89 stack --pack-iram custom {}} {--codeseg {} --constseg {} --code-loc {} --stack-size {} --xram-loc {} --lib-path {} --xstack-loc {} --stack-loc {} --data-loc {}} {-l {} -L {} --disable-warning {} -I {}} {-l 1 -A {} -F hex custom {}} {adf 1}]]></compiler_options>
 	<files
-		count="2"
-		current_file="1"
+		count="3"
+		current_file="2"
 		current_file2="-1"
 		pwin_sash="0"
 		selected_view="0"
 		pwin_orient="horizontal">
 
-		<file name="PINGPONG1.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="120"/>
-			<md5_hash value="2B7CF29758EF224AEB8C087271531DE6"/>
+		<file name="2018_PingPong.asm" active="yes" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
+			<actual_line value="76"/>
+			<md5_hash value="2506BF9A2518EB707A5ABBBC21225530"/>
 			<path><![CDATA[]]></path>
 			<bookmarks>
 				0
@@ -286,9 +286,9 @@
 			<notes><![CDATA[]]></notes>
 		</file>
 
-		<file name="PINGPONG2.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="126"/>
-			<md5_hash value="9702A057C44F258291142C599FBBD1B3"/>
+		<file name="graphfunctions.asm" active="yes" o_bookmark="0" p_bookmark="0" file_index="1" read_only="0" highlight="0">
+			<actual_line value="107"/>
+			<md5_hash value="75D65C296EA6466EFF0C6B27DF30B22A"/>
 			<path><![CDATA[]]></path>
 			<bookmarks>
 				0
@@ -296,14 +296,14 @@
 			<breakpoints>
 				0
 			</breakpoints>
-			<eol value="lf"/>
+			<eol value="crlf"/>
 			<encoding value="utf-8"/>
 			<notes><![CDATA[]]></notes>
 		</file>
 
-		<file name="PINGPONG3.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="92"/>
-			<md5_hash value="10B36DB11392F7589C8C8779EF28B96D"/>
+		<file name="logicfunctions.asm" active="yes" o_bookmark="0" p_bookmark="0" file_index="2" read_only="0" highlight="0">
+			<actual_line value="54"/>
+			<md5_hash value="93C9F72C9F0757E7D12A2B564BD9BAE7"/>
 			<path><![CDATA[]]></path>
 			<bookmarks>
 				0
@@ -311,232 +311,7 @@
 			<breakpoints>
 				0
 			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="OR_2.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="15"/>
-			<md5_hash value="A799A98A52D2633E2496DCE061444E72"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="PINGPONG4.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="413"/>
-			<md5_hash value="913C3CFD1F5DA41E1DAAD5FEDA3746F7"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="PINGPONG5.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="5"/>
-			<md5_hash value="4D6B655133B1F9D90EBFA81E4FC5EADA"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="PINGPONG6.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="152"/>
-			<md5_hash value="EF62D8888916659AE6CFC1DD450D2D3E"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="PINGPONG6a.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="163"/>
-			<md5_hash value="B06CFD8003FB0843F7539965F457182D"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="PINGPONG6c.asm" active="yes" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="1"/>
-			<md5_hash value="36F4CF2F2B1929F07843C7F11F0EFCD4"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="Matriz225_1.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="87"/>
-			<md5_hash value="779BB9E24FB2105AF0ECC651A70BFED9"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="INTERMITENTE1.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="61"/>
-			<md5_hash value="9E20307753A9699B17D7569824221549"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="Test_PPI1.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="23"/>
-			<md5_hash value="5F2D22AD0ED1A330F1C67B8421926A71"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="Test_PPI2.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="1"/>
-			<md5_hash value="CB686BC570C0597494F729E7D8261E71"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="Test_PPI3.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="195"/>
-			<md5_hash value="F694C1E5FB784EA05DEE8651FD921F8D"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="Test_PPI4.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="1"/>
-			<md5_hash value="D0CEE09165446C59A8F34B146BE2606A"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="Test_PPI5.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="67"/>
-			<md5_hash value="C0AEE83C040AE2FE47E5D8CA269FCBDD"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="Muneco.asm" active="no" o_bookmark="0" p_bookmark="0" file_index="0" read_only="0" highlight="0">
-			<actual_line value="701"/>
-			<md5_hash value="A437DC608DF737F254653C9481CC9269"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
-			<encoding value="utf-8"/>
-			<notes><![CDATA[]]></notes>
-		</file>
-
-		<file name="2018_PingPong.asm" active="yes" o_bookmark="0" p_bookmark="0" file_index="1" read_only="0" highlight="0">
-			<actual_line value="1"/>
-			<md5_hash value="E62D908D6BFDBA48535FAE26E40061AD"/>
-			<path><![CDATA[]]></path>
-			<bookmarks>
-				0
-			</bookmarks>
-			<breakpoints>
-				0
-			</breakpoints>
-			<eol value="lf"/>
+			<eol value="crlf"/>
 			<encoding value="utf-8"/>
 			<notes><![CDATA[]]></notes>
 		</file>
