@@ -18,3 +18,4 @@
 *.hex~
 *.ihx
 *.gpio
+*.vhc~
