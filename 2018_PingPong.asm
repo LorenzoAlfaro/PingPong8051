@@ -29,14 +29,16 @@ zyx:
 ENDM
 
 
-; PROJECTO DE PING PONG POR LORENZO ALFARO
-; y ALEJANDRO VARGAS ABRIL 2012
-; Version 6, Uso un delays para el display
+; PING PONG (8051) by LORENZO ALFARO
+; and ALEJANDRO VARGAS, APRIL 2012
 
-; times the sprite is rendered
+; Constant definitions:
+
+; Number of times game is rendered
 SPRITE_RENDER equ 1
 PAD_SIZE equ 4
 TAM_X equ 8 ; 15
+; TODO TAM_X and TAM_Y should be the same!
 TAM_Y equ 9 ; 16
 LEFT_BORDER equ 0
 RIGHT_BORDER equ TAM_X -1
@@ -50,31 +52,34 @@ DN_WALL_ZONE equ TAM_Y - 1
 PAD_UP_LIMIT equ UP_WALL_ZONE
 PAD_DN_LIMIT equ TAM_Y - PAD_SIZE
 
+; Address definitions:
+
 ; PPI Ports addresses,
-; para referenciar se usa movX
-; Direccion del puerto A en RAM Externa
+; Use movx to write/read to the PPI 8255
+; PPI port addresses (use external memory mode)
 PORT_A equ 02000H
 PORT_B equ 02001H
 PORT_C equ 02002H
-; Recibe palabra de control
+; Write to this register to configure PPI
 Reg_Control equ	02003H
 
 
-;Variable temporal de paleta
+; Variable definitions:
+
+; Game variables
+; Temp variable that holds pad position
 P_T	data 1FH
-;Variables de posicion de objetos
 PAD1 data 20H
 PAD2 data 21H
-;OFFSET	para la MEMORIAVIDEO
+; MEMORIAVIDEO offset
 X data 22H
-;OFFSET	para la LUT_BALL
+; LUT_BALL offset
 Y data 23H
 
-; Almacenamiento temporal para
-; los operandos de la or de alto nivel
+; OR/AND operand variables
 A_O data 30H
 B_O data 31H
-; Elemento a comparar
+; Element that is being compared
 C_O data 32H
 
 MEMORIAVIDEO equ 40H
@@ -97,8 +102,9 @@ UP_2 equ P1.2
 DOWN_1 equ P1.1
 DOWN_2 equ P1.3
 
-; RAM 29 Indica la direccion de la bola/
-; Solamente puede estar un bit en uno.
+; RAM 0x29 stores ball direction
+; Only 1 bit is on at all times
+; I think there is a bug here
 ; UR 00000001
 ; UL 00000010
 ; DR 00000100
@@ -112,12 +118,11 @@ DL equ 4BH
 UP equ 4CH
 DOWN equ 4DH
 
-; Direccion 2A, del bit 0
+; Address 0x2A, bit 0
 ; 00000001
 O1 equ 50H
 ; 00000010
 O2 equ 51H
-; Donde se guarda el resultado logico
 ; 00000100
 Result1 equ 52H
 ; 00001000
@@ -126,44 +131,47 @@ Result2 equ 53H
 
 	ORG 0
 	sjmp START
-	; Comienzo el programa saltando los vectores
+	; Jump interrupt vector addresses.
 	ORG 30H
 
 START:
-; Seccion de INICIALIZACION
+	; Initialization
 	mov	SP, #5FH
-	; Esta palabara de control defines A,B,C=outputs
+	; Define PPI ports A, B and C as outputs.
 	mov	A, #080H
-	; Cargo direccion del registro de control
-	mov	DPTR, #REG_CONTROL
-	; Programo el PPI
+	; Load address of control register
+	mov	DPTR, #Reg_Control
+	; Configure PPI
 	; Add this when using 15x15 with PPI
-	;movX @DPTR, A
-	; 7 Inicializo la posicion de las paletas
-	; LEFT PAD
-	mov	PAD1, #1
-	; 8 maxima posicion es 12
-	; RIGHT PAD
-	mov	PAD2, #1
-	; 7 for 15x15
-	mov	X, #3
-	; 7 for 15x15
-	mov	Y, #3
+	; movX @DPTR, A
+
+
+	; Init pad positions
+	; PAD1 is Left pad
+	mov	PAD1, #1 ; #7
+	; max position is 12 for 15x15
+	mov	PAD2, #1 ; #8
+
+	mov	X, #3 ; #7
+	mov	Y, #3 ; #7
 	setb UL
 
-; TOMA DE DECICIONES LEYENDO P1
+; MAIN game loop
 READ_PUERTO:
 	; Read input port.
 	mov A, SW
-	; lee el switch cada 0.2 segundos
-	;call    delay_0_2
+	; Read switch every 0.2 secs
+	; call    delay_0_2
 
-	; Apply Mask 00001111
+	; Apply mask 00001111b
 	anl A, #0FH
 	; Make copy in R7 for comparisons
 	mov R7, A
 
-; Logica para subir o bajar el pad.
+; Update position of the pads according
+; to switch inputs
+; TODO: implement interrupts instead
+; for async updating
 PAD1_UP_DOWN:
 	; UP_1 is the P1.0
 	jb UP_1, D1
@@ -181,7 +189,7 @@ D2:
 	jb DOWN_2, BALL_LOGIC
 	PAD_M PAD2, PAD_UP_LIMIT
 
-; Inicia logica de la bola.
+; Update position of the ball
 BALL_LOGIC:
 	; DEBUG: Save X value
 	mov A, X
@@ -369,7 +377,7 @@ DR_12:
 
 GRAFICO:
     call CLEAR_VIDEO_MEMORY
-	; This is a 8 x 8 loop, of just display
+	; This is a 8 x 8 loop of wrtting to PPI
 	call WRITE_VIDEO_MEMORY
 	mov R1, #SPRITE_RENDER
 Pause1a:
@@ -379,13 +387,13 @@ Pause2a:
 	djnz R2, PAUSE2a
 	djnz R1, PAUSE1a
 	;call	DELAY_0_2
+
 	; This complete the game loop
 	jmp READ_PUERTO
 
-; Seccion de Las tablas para los graficos
 
 	ORG 800H
-	; Uso esta tabla para mostrar la bola en la matriz
+	; 'Sprites' of the ball
 LUT_BALL:
 	DB 0H, 80H, 40H, 20H, 10H, 8H, 4H, 2H, 1H, 0H, 0H, 0H, 0H, 0H, 0H, 0H
 
@@ -393,6 +401,7 @@ LUT_BALL:
 LUT_BALL2:
 	DB 0H, 0H, 0H, 0H, 0H, 0H, 0H, 0H, 0H, 80H, 40H, 20H, 10H, 8H, 4H, 2H
 
+	; 'Sprites' of the pads
 	ORG 900H
 LUT_PAD:
 	DB 0H, 0F0H, 78H, 3CH, 1EH, 0FH, 7H, 3H, 1H, 0H, 0H, 0H, 0H
