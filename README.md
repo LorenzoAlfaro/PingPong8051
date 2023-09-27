@@ -27,6 +27,10 @@ Even though I don't have the original hardware. I found a way to simulate it. Th
 
 Simulated version 8x8
 
+![Ping Pong Sim (1)](https://github.com/LorenzoAlfaro/PingPong8051/assets/58958983/9e9e238b-8e45-4686-a2f6-0415ea7bc673)
+
+
+
 ![image](https://github.com/LorenzoAlfaro/PingPong8051/assets/58958983/4ed4e585-c67f-4e19-9003-c66fa2186036)
 
 ![image](https://github.com/LorenzoAlfaro/PingPong8051/assets/58958983/c09a7d3f-c6da-4842-9f58-ac4287382c8f)
