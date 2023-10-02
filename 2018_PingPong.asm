@@ -210,6 +210,30 @@ BALL_LOGIC_:
 	; La bola sigue su curso
 IGUAL:
 
+; Ramas de la logica
+LOST_:
+	jmp START
+
+WALL_BOUNCE_:
+	; jbc clears the bit before the jump
+	jbc UR, UR_1_
+	jbc UL, UL_1_
+	jbc DR, DR_1_
+	jbc DL, DL_1_
+DL_1_:
+	setb UL
+	jmp ACTION_
+UR_1_:
+	setb DR
+	jmp ACTION_
+UL_1_:
+	setb DL
+	jmp ACTION_
+DR_1_:
+	setb UR
+	jmp ACTION_
+
+
 ACTION_:
 	; Equivalent to a switch case where
 	; only one bit at a time can be set UR, UL, DR, DL
@@ -241,10 +265,6 @@ ADR_1_:
 	inc Y
 	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
 	jmp GRAFICO_ ; again, don't try to be too smart, just include this line for clarity
-
-; Ramas de la logica
-LOST_:
-	jmp START
 
 ZONA_PALETA_:
 	; La logica mas compleja es la de la bola
@@ -316,26 +336,6 @@ B60_:
 	jmp PAD_BOUNCE_
 A50_:
 	jmp CORNER_BOUNCE_
-
-WALL_BOUNCE_:
-	; jbc clears the bit before the jump
-	jbc UR, UR_1_
-	jbc UL, UL_1_
-	jbc DR, DR_1_
-	jbc DL, DL_1_
-DL_1_:
-	setb UL
-	jmp ACTION_
-UR_1_:
-	setb DR
-	jmp ACTION_
-UL_1_:
-	setb DL
-	jmp ACTION_
-DR_1_:
-	setb UR
-	jmp ACTION_
-
 CORNER_BOUNCE_:
 	jbc UR, UR_11_
 	jbc UL, UL_11_
