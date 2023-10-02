@@ -3,7 +3,7 @@ include logicfunctions.asm
 
 
 ; TODO: Validate pad is not in the border
-PAD_M MACRO PAD_A, LIMIT
+PAD_UP_MACRO MACRO PAD_A, LIMIT
         LOCAL xyz
         LOCAL zyx
 	mov	R2, PAD_A
@@ -16,7 +16,7 @@ zyx:
 ENDM
 
 
-PAD_P MACRO PAD_A, LIMIT
+PAD_DOWN_MACRO MACRO PAD_A, LIMIT
         LOCAL xyz
         LOCAL zyx
 	mov	R2, PAD_A
@@ -176,20 +176,19 @@ PAD1_UP_DOWN_:
 	; UP_1 is the P1.0
 	jb UP_1, D1_
 	jnb DOWN_1, PAD2_UP_DOWN_
-	PAD_P PAD1, PAD_DN_LIMIT
+	PAD_DOWN_MACRO PAD1, PAD_DN_LIMIT
 D1_:
 	jb DOWN_1, PAD2_UP_DOWN_
-	PAD_M PAD1, PAD_UP_LIMIT
+	PAD_UP_MACRO PAD1, PAD_UP_LIMIT
 
 PAD2_UP_DOWN_:
 	jb UP_2, D2_
 	jnb DOWN_2, BALL_LOGIC_
-	PAD_P PAD2, PAD_DN_LIMIT
+	PAD_DOWN_MACRO PAD2, PAD_DN_LIMIT
 D2_:
 	jb DOWN_2, BALL_LOGIC_
-	PAD_M PAD2, PAD_UP_LIMIT
+	PAD_UP_MACRO PAD2, PAD_UP_LIMIT
 
-; Update position of the ball
 BALL_LOGIC_:
 	; DEBUG: Save X value
 	mov A, X
@@ -238,7 +237,6 @@ ADR_1_:
 	inc Y
 	jmp DRAW_DISPLAY_ ; again, don't try to be too smart, just include this line for clarity
 
-; Ramas de la logica
 LOST_:
 	jmp START
 WALL_BOUNCE_:
@@ -261,42 +259,65 @@ DR_1_:
 	jmp UPDATE_BALL_POSITION_
 
 PAD_ZONE_:
-	; La logica mas compleja es la de la bola
 	mov R2, X
-	; Cual es la paleta en cuestion?
 	cjne R2, #LEFT_PAD_ZONE, PALETA_2_
 	mov P_T, PAD1
 	sjmp A70_
 PALETA_2_:
 	mov P_T, PAD2
+
+	; if ball_x == LEFT_PAD_ZONE
+	;	P_T = PAD1_Y
+	; else
+	;	P_T = PAD2_Y
 A70_:
 	mov A, P_T
-	subb A, #1
-	; R2 es mi P_minimo
+	subb A, #1 ; this is why Y starts with 1, not 0, to not deal with negative numbers
 	mov R2, A
 	mov A_O, R2
-	; A_0 = P_T -1
 	add A, #5
-	; R3 es mi P_maximo
 	mov R3, A
 	mov B_O, R3
-	; B_0 = A_0 + 5
 	mov C_O, Y
 	call ESTA_RANGO
-	; Si no esta en el rango continuo sin rebotar.
 	jnb RESULT2, UPDATE_BALL_POSITION_
+	; R2 es mi Pad_Y0
+	; R3 es mi Pad_Y1
+	;
+	; A_O = P_T - 1
+	; B_O = A_0 + 5
+	; if Y > P_maximo or Y < P_minimo
+	;	goto UPDATE_BALL_POSITION_ // No bounce needs to be calculate
+
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
-	; Es un caso especial?
-	; Si, entonces rebote en la esquina.
 	jb RESULT1, A50_
+	; if Y == TOP or Y == BOTTOM
+	;	goto corner_bounce
+
+	; ORL does a bitwise "OR" operation between operand1 and operand2,
+	; leaving the resulting value in operand1.
+
 	mov C, DL
 	orl C, DR
-	; La bola baja o BIT 00100000 29H
 	mov DOWN, C
+
 	mov C, UL
 	orl C, UR
-	; o sube BIT 00010000 29H
 	mov UP, C
+
+	; set UP/DOWN flags, only should be true
+	; if ball going up-right or up-down?
+	; 	UP = 1;
+	; if ball going down-right or down-down?
+	; 	DOWN = 1;
+
+	; BUG: I'm not clearing UP or DOWN after each run
+
+
+	; ANL does a bitwise "AND" operation between operand1 and operand2,
+	; leaving the resulting value in operand1.
+
+; Calculate flag1
 	mov A, R2
 	cjne A, Y, B90_
 	setb RESULT1
@@ -304,11 +325,14 @@ A70_:
 B90_:
 	clr RESULT1
 B80_:
+	; if Y == Pad_Y0 and DOWN == 1
+	;	set flag1
+	; else
+	;	clear flag1
 	mov C, RESULT1
-	; y == Pmin? AND  DOWN == 1?
 	anl C, DOWN
-	; Condicion 1 se cumplio?
 	mov RESULT1, C
+; Calculate flag2
 	mov A, R3
 	cjne A, Y, B70_
 	setb RESULT2
@@ -316,20 +340,28 @@ B80_:
 B70_:
 	clr RESULT2
 B60_:
+	; if Y == Pad_Y1 and UP == 1
+	;	set flag2
+	; else
+	;	clear flag2
 	mov C, RESULT2
-	; y == Pmax? AND  UP == 1?
 	anl C, UP
-	; Condicion 2 se cumplio?
 	mov RESULT2, C
+
+; or both flags
+
 	mov C, RESULT1
 	orl C, RESULT2
-	; si las dos condiciones se cumplen
-	; pego en la esquina de la paleta
 	jc A50_
-	; Si no, pego en plano
+
 	jmp PAD_BOUNCE_
 A50_:
 	jmp CORNER_BOUNCE_
+
+	; if flag1 or flag2
+	; 	goto CORNER_BOUNCE
+	; else
+	;	goto PAD_BOUNCE
 
 CORNER_BOUNCE_:
 	jbc UR, UR_11_
