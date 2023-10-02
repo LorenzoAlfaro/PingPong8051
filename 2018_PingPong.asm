@@ -172,25 +172,25 @@ READ_PORT_:
 ; to switch inputs
 ; TODO: implement interrupts instead
 ; for async updating
-PAD1_UP_DOWN:
+PAD1_UP_DOWN_:
 	; UP_1 is the P1.0
-	jb UP_1, D1
-	jnb DOWN_1, PAD2_UP_DOWN
+	jb UP_1, D1_
+	jnb DOWN_1, PAD2_UP_DOWN_
 	PAD_P PAD1, PAD_DN_LIMIT
-D1:
-	jb DOWN_1, PAD2_UP_DOWN
+D1_:
+	jb DOWN_1, PAD2_UP_DOWN_
 	PAD_M PAD1, PAD_UP_LIMIT
 
-PAD2_UP_DOWN:
-	jb UP_2, D2
-	jnb DOWN_2, BALL_LOGIC
+PAD2_UP_DOWN_:
+	jb UP_2, D2_
+	jnb DOWN_2, BALL_LOGIC_
 	PAD_P PAD2, PAD_DN_LIMIT
-D2:
-	jb DOWN_2, BALL_LOGIC
+D2_:
+	jb DOWN_2, BALL_LOGIC_
 	PAD_M PAD2, PAD_UP_LIMIT
 
 ; Update position of the ball
-BALL_LOGIC:
+BALL_LOGIC_:
 	; DEBUG: Save X value
 	mov A, X
 	; DEBUG: Print in port 3
@@ -198,82 +198,82 @@ BALL_LOGIC:
 
 	; x = 0? OR x = 14?     Alguien perdio?
 	OR_MACRO LEFT_BORDER, RIGHT_BORDER, X
-	jb RESULT1, LOST
+	jb RESULT1, LOST_
 
 	; x = 1? OR x = 13? La bola esta en zona de paleta?
 	OR_MACRO LEFT_PAD_ZONE, RIGHT_PAD_ZONE, X
-	jb RESULT1, ZONA_PALETA
+	jb RESULT1, ZONA_PALETA_
 
 	; y = 1? OR y = 15? La bola esta en una pared?
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
-	jb RESULT1, CHOQUE_PARED
+	jb RESULT1, CHOQUE_PARED_
 	; La bola sigue su curso
 IGUAL:
 
-ACTION:
+ACTION_:
 	; Equivalent to a switch case where
 	; only one bit at a time can be set UR, UL, DR, DL
-	jb UR, AUR_1
-	jb UL, AUL_1
-	jb DR, ADR_1
+	jb UR, AUR_1_
+	jb UL, AUL_1_
+	jb DR, ADR_1_
 	; Explicitly jump, don't waterfall.
-	jb DL, ADL_1
+	jb DL, ADL_1_
 
-ADL_1:
+ADL_1_:
 	dec X
 	inc Y
 	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO
-AUR_1:
+	jmp GRAFICO_
+AUR_1_:
 	; Increment X to go right in matrix
 	inc X
 	; Decrement Y to go up in matrix
 	dec Y
 	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO
-AUL_1:
+	jmp GRAFICO_
+AUL_1_:
 	dec X
 	dec Y
 	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO
-ADR_1:
+	jmp GRAFICO_
+ADR_1_:
 	inc X
 	inc Y
 	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO ; again, don't try to be too smart, just include this line for clarity
+	jmp GRAFICO_ ; again, don't try to be too smart, just include this line for clarity
 
 ; Ramas de la logica
-LOST:
+LOST_:
 	jmp START
-CHOQUE_PARED:
-	jbc UR, UR_1
-	jbc UL, UL_1
-	jbc DR, DR_1
-	jbc DL, DL_1
-DL_1:
-	clr DL
+CHOQUE_PARED_:
+	; jbc clears the bit before the jump
+	jbc UR, UR_1_
+	jbc UL, UL_1_
+	jbc DR, DR_1_
+	jbc DL, DL_1_
+DL_1_:
 	setb UL
-	jmp ACTION
-UR_1:
+	jmp ACTION_
+UR_1_:
 	setb DR
-	jmp ACTION
-UL_1:
+	jmp ACTION_
+UL_1_:
 	setb DL
-	jmp ACTION
-DR_1:
+	jmp ACTION_
+DR_1_:
 	setb UR
-	jmp ACTION
+	jmp ACTION_
 
-ZONA_PALETA:
+ZONA_PALETA_:
 	; La logica mas compleja es la de la bola
 	mov R2, X
 	; Cual es la paleta en cuestion?
-	cjne R2, #LEFT_PAD_ZONE, PALETA_2
+	cjne R2, #LEFT_PAD_ZONE, PALETA_2_
 	mov P_T, PAD1
-	sjmp A70
-PALETA_2:
+	sjmp A70_
+PALETA_2_:
 	mov P_T, PAD2
-A70:
+A70_:
 	mov A, P_T
 	subb A, #1
 	; R2 es mi P_minimo
@@ -288,11 +288,11 @@ A70:
 	mov C_O, Y
 	call ESTA_RANGO
 	; Si no esta en el rango continuo sin rebotar.
-	jnb RESULT2, ACTION
+	jnb RESULT2, ACTION_
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
 	; Es un caso especial?
 	; Si, entonces rebote en la esquina.
-	jb RESULT1, A50
+	jb RESULT1, A50_
 	mov C, DL
 	orl C, DR
 	; La bola baja o BIT 00100000 29H
@@ -302,24 +302,24 @@ A70:
 	; o sube BIT 00010000 29H
 	mov UP, C
 	mov A, R2
-	cjne A, Y, B90
+	cjne A, Y, B90_
 	setb RESULT1
-	sjmp B80
-B90:
+	sjmp B80_
+B90_:
 	clr RESULT1
-B80:
+B80_:
 	mov C, RESULT1
 	; y == Pmin? AND  DOWN == 1?
 	anl C, DOWN
 	; Condicion 1 se cumplio?
 	mov RESULT1, C
 	mov A, R3
-	cjne A, Y, B70
+	cjne A, Y, B70_
 	setb RESULT2
-	sjmp B60
-B70:
+	sjmp B60_
+B70_:
 	clr RESULT2
-B60:
+B60_:
 	mov C, RESULT2
 	; y == Pmax? AND  UP == 1?
 	anl C, UP
@@ -329,63 +329,62 @@ B60:
 	orl C, RESULT2
 	; si las dos condiciones se cumplen
 	; pego en la esquina de la paleta
-	jc A50
+	jc A50_
 	; Si no, pego en plano
-	jmp REBOTE_PALETA
-A50:
-	jmp REBOTE_ESQUINA
+	jmp REBOTE_PALETA_
+A50_:
+	jmp REBOTE_ESQUINA_
 
-REBOTE_ESQUINA:
-	jbc UR, UR_11
-	jbc UL, UL_11
-	jbc DR, DR_11
-	jbc DL, DL_11
-DL_11:
-	; not necessary now because using jbc DL, DL_11 clears it
-	clr DL
+REBOTE_ESQUINA_:
+	jbc UR, UR_11_
+	jbc UL, UL_11_
+	jbc DR, DR_11_
+	jbc DL, DL_11_
+DL_11_:
+	; not necessary now because using jbc DL, DL_11_ clears it
 	setb UR
-	jmp ACTION
-UR_11:
+	jmp ACTION_
+UR_11_:
 	setb DL
-	jmp ACTION
-UL_11:
+	jmp ACTION_
+UL_11_:
 	setb DR
-	jmp ACTION
-DR_11:
+	jmp ACTION_
+DR_11_:
 	setb UL
-	jmp ACTION
+	jmp ACTION_
 
 
-REBOTE_PALETA:
-	jbc UR, UR_12
-	jbc UL, UL_12
-	jbc DR, DR_12
-	jbc DL, DL_12
-DL_12:
-	clr DL
+REBOTE_PALETA_:
+	jbc UR, UR_12_
+	jbc UL, UL_12_
+	jbc DR, DR_12_
+	jbc DL, DL_12_
+	; jbc clears the bit before the jump
+DL_12_:
 	setb DR
-	jmp ACTION
-UR_12:
+	jmp ACTION_
+UR_12_:
 	setb UL
-	jmp ACTION
-UL_12:
+	jmp ACTION_
+UL_12_:
 	setb UR
-	jmp ACTION
-DR_12:
+	jmp ACTION_
+DR_12_:
 	setb DL
-	jmp ACTION
+	jmp ACTION_
 
-GRAFICO:
+GRAFICO_:
     call CLEAR_VIDEO_MEMORY
 	; This is a 8 x 8 loop of wrtting to PPI
 	call WRITE_VIDEO_MEMORY
 	mov R1, #SPRITE_RENDER
-Pause1a:
+PAUSE1a_:
 	mov R2, #SPRITE_RENDER
-Pause2a:
+PAUSE2a_:
 	call WRITE_TO_PPI
-	djnz R2, PAUSE2a
-	djnz R1, PAUSE1a
+	djnz R2, PAUSE2a_
+	djnz R1, PAUSE1a_
 	;call	DELAY_0_2
 
 	; This complete the game loop
