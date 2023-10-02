@@ -102,7 +102,7 @@ UP_2 equ P1.2
 DOWN_1 equ P1.1
 DOWN_2 equ P1.3
 
-; RAM 0x29 stores ball direction
+; RAM 0x29 (byte address) stores ball direction
 ; Only 1 bit is on at all times
 ; I think there is a bug here
 ; UR 00000001
@@ -157,7 +157,7 @@ START:
 	setb UL
 
 ; MAIN game loop
-READ_PUERTO:
+READ_PORT_:
 	; Read input port.
 	mov A, SW
 	; Read switch every 0.2 secs
@@ -222,24 +222,24 @@ ACTION:
 ADL_1:
 	dec X
 	inc Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
 	jmp GRAFICO
 AUR_1:
 	; Increment X to go right in matrix
 	inc X
 	; Decrement Y to go up in matrix
 	dec Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
 	jmp GRAFICO
 AUL_1:
 	dec X
 	dec Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
 	jmp GRAFICO
 ADR_1:
 	inc X
 	inc Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
 	jmp GRAFICO ; again, don't try to be too smart, just include this line for clarity
 
 ; Ramas de la logica
@@ -389,7 +389,7 @@ Pause2a:
 	;call	DELAY_0_2
 
 	; This complete the game loop
-	jmp READ_PUERTO
+	jmp READ_PORT_
 
 
 	ORG 800H
