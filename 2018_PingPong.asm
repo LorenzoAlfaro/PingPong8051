@@ -206,7 +206,7 @@ BALL_LOGIC_:
 
 	; y = 1? OR y = 15? La bola esta en una pared?
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
-	jb RESULT1, CHOQUE_PARED_
+	jb RESULT1, WALL_BOUNCE_
 	; La bola sigue su curso
 IGUAL:
 
@@ -313,11 +313,11 @@ B60_:
 	; pego en la esquina de la paleta
 	jc A50_
 	; Si no, pego en plano
-	jmp REBOTE_PALETA_
+	jmp PAD_BOUNCE_
 A50_:
-	jmp REBOTE_ESQUINA_
+	jmp CORNER_BOUNCE_
 
-CHOQUE_PARED_:
+WALL_BOUNCE_:
 	; jbc clears the bit before the jump
 	jbc UR, UR_1_
 	jbc UL, UL_1_
@@ -336,7 +336,7 @@ DR_1_:
 	setb UR
 	jmp ACTION_
 
-REBOTE_ESQUINA_:
+CORNER_BOUNCE_:
 	jbc UR, UR_11_
 	jbc UL, UL_11_
 	jbc DR, DR_11_
@@ -356,7 +356,7 @@ DR_11_:
 	jmp ACTION_
 
 
-REBOTE_PALETA_:
+PAD_BOUNCE_:
 	jbc UR, UR_12_
 	jbc UL, UL_12_
 	jbc DR, DR_12_
