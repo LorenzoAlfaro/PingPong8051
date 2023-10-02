@@ -1,330 +1,407 @@
-INCLUDE graphfunctions.asm
-INCLUDE logicfunctions.asm
+include graphfunctions.asm
+include logicfunctions.asm
 
+
+; TODO: Validate pad is not in the border
 PAD_M MACRO PAD_A, LIMIT
         LOCAL xyz
         LOCAL zyx
-	MOV	R2, PAD_A
-	CJNE R2, #LIMIT, xyz
-	SJMP zyx						;TODO Logica de validacion que el pad no este en el limite
+	mov	R2, PAD_A
+	cjne R2, #LIMIT, xyz
+	sjmp zyx
 xyz:
-	DEC PAD_A
+	dec PAD_A
 zyx:
-	;RET
+
 ENDM
+
 
 PAD_P MACRO PAD_A, LIMIT
         LOCAL xyz
         LOCAL zyx
-	MOV	R2, PAD_A
-	CJNE R2, #LIMIT, xyz
-	SJMP zyx						;TODO Logica de validacion que el pad no este en el limite
+	mov	R2, PAD_A
+	cjne R2, #LIMIT, xyz
+	sjmp zyx
 xyz:
-	INC	PAD_A
+	inc	PAD_A
 zyx:
-	;RET
+
 ENDM
 
 
-;PROJECTO DE PING PONG POR LORENZO ALFARO y ALEJANDRO VARGAS ABRIL 2012
-;Version 6, Uso un delays para el display
-SPRITE_RENDER EQU 1 ; times the sprite
-PAD_SIZE EQU 4
-TAM_X EQU	8 ; 15
-TAM_Y EQU	9 ; 16
-LEFT_BORDER EQU 0
-RIGHT_BORDER EQU TAM_X -1
+; PING PONG (8051) by LORENZO ALFARO
+; and ALEJANDRO VARGAS, APRIL 2012
 
-LEFT_PAD_ZONE EQU 1
-RIGHT_PAD_ZONE EQU TAM_X -2
+; Constant definitions:
 
-UP_WALL_ZONE EQU 1
-DN_WALL_ZONE EQU TAM_Y - 1
+; Number of times game is rendered
+SPRITE_RENDER equ 1
+PAD_SIZE equ 4
+TAM_X equ 8 ; 15
+; TODO TAM_X and TAM_Y should be the same!
+TAM_Y equ 9 ; 16
+LEFT_BORDER equ 0
+RIGHT_BORDER equ TAM_X -1
 
-PAD_UP_LIMIT EQU UP_WALL_ZONE
-PAD_DN_LIMIT EQU TAM_Y - PAD_SIZE
+LEFT_PAD_ZONE equ 1
+RIGHT_PAD_ZONE equ TAM_X -2
 
-; PPI Ports addresses
-PORT_A EQU	02000H			; Direccion del puerto A en RAM Externa
-PORT_B EQU	02001H			; Para referenciar se usa MOVX
-PORT_C EQU	02002H
-Reg_Control EQU	02003H			; Recibe palabra de control
+UP_WALL_ZONE equ 1
+DN_WALL_ZONE equ TAM_Y - 1
 
-;;POS_PAD1	EQU	0H				; position dela tableta en la pantalla
-;;POS_PAD2	EQU	0EH
-;;Y_T	DATA	1EH			;variable temporal y
-P_T	DATA 1FH			;Variable temporal de paleta
-PAD1 DATA 20H			;Variables de posicion de objetos
-PAD2 DATA 21H			;
-X DATA 22H			;OFFSET	para la MEMORIAVIDEO
-Y DATA 23H			;OFFSET	para la LUT_BALL
+PAD_UP_LIMIT equ UP_WALL_ZONE
+PAD_DN_LIMIT equ TAM_Y - PAD_SIZE
 
-A_O DATA 30H			; Almacenamiento temporal para los operandos de la or de alto nivel
-B_O DATA 31H
-C_O DATA 32H			; Elemento a comparar
+; Address definitions:
 
-MEMORIAVIDEO EQU 40H
-MEMORIAVIDEO2 EQU 50H
+; PPI Ports addresses,
+; Use movx to write/read to the PPI 8255
+; PPI port addresses (use external memory mode)
+PORT_A equ 02000H
+PORT_B equ 02001H
+PORT_C equ 02002H
+; Write to this register to configure PPI
+Reg_Control equ	02003H
 
-;MemoriaViDEOA EQU 41H
-;MemoriaVIDEO2A EQU 51H
 
-ADRE_PAD1A EQU MEMORIAVIDEO
-ADRE_PAD1B EQU MEMORIAVIDEO2
+; Variable definitions:
 
-ADRE_PAD2A EQU ADRE_PAD1A + TAM_X -1; 4EH for size 15x15
-ADRE_PAD2B EQU ADRE_PAD1B + TAM_X -1; 5EH for size 15x15
+; Game variables
+; Temp variable that holds pad position
+P_T	data 1FH
+PAD1 data 20H
+PAD2 data 21H
+; MEMORIAVIDEO offset
+X data 22H
+; LUT_BALL offset
+Y data 23H
 
-SW EQU P1
-UP_1 EQU P1.0
-DOWN_1 EQU P1.1
-UP_2 EQU P1.2
-DOWN_2 EQU P1.3
+; OR/AND operand variables
+A_O data 30H
+B_O data 31H
+; Element that is being compared
+C_O data 32H
 
-UR EQU 48H				; 00000001 RAM 29 Indican la direccion de la bola, SOLAMENTE puede estar uno
-UL EQU 49H				; 00000010
-DR EQU 4AH				; 00000100 pg 181
-DL EQU 4BH				; 00001000
-UP EQU 4CH				; 00010000
-DOWN EQU 4DH				; 00100000
+MEMORIAVIDEO equ 40H
+MEMORIAVIDEO2 equ 50H
 
-O1 EQU 50H				;Direccion 2A, del bit 0			00000001
-O2 EQU 51H				;	00000010
-Result1 EQU 52H				;resultado logico donde se guarda		00000100
-Result2 EQU 53H				;	00001000
+;MemoriaViDEOA equ 41H
+;MemoriaVIDEO2A equ 51H
+
+ADRE_PAD1A equ MEMORIAVIDEO
+ADRE_PAD1B equ MEMORIAVIDEO2
+
+; 4EH for size 15x15
+ADRE_PAD2A equ ADRE_PAD1A + TAM_X - 1
+; 5EH for size 15x15
+ADRE_PAD2B equ ADRE_PAD1B + TAM_X - 1
+
+SW equ P1
+UP_1 equ P1.0
+UP_2 equ P1.2
+DOWN_1 equ P1.1
+DOWN_2 equ P1.3
+
+; RAM 0x29 stores ball direction
+; Only 1 bit is on at all times
+; I think there is a bug here
+; UR 00000001
+; UL 00000010
+; DR 00000100
+; DL 00001000
+; UP 00010000
+; DN 00100000
+UR equ 48H
+UL equ 49H
+DR equ 4AH
+DL equ 4BH
+UP equ 4CH
+DOWN equ 4DH
+
+; Address 0x2A, bit 0
+; 00000001
+O1 equ 50H
+; 00000010
+O2 equ 51H
+; 00000100
+Result1 equ 52H
+; 00001000
+Result2 equ 53H
+
 
 	ORG 0
-	SJMP START
-	ORG 30H		;Comienzo el programa saltando los vectores
-START:
+	sjmp START
+	; Jump interrupt vector addresses.
+	ORG 30H
 
-;--------------------------------------Seccion de INICIALIZACION
-	MOV	SP, #5FH
-	MOV	A, #080H			; Esta palabara de control define A,B,C=outputs
-	MOV	DPTR, #REG_CONTROL	; Cargo direccion del registro de control
-	;MOVX @DPTR, A				; Programo el PPI ; add this when using 15x15 with PPI
-	MOV	PAD1, #1				; 7 Inicializo la posicion de las paletas ; LEFT PAD
-	MOV	PAD2, #1				; 8 maxima posicion es 12			; RIGHT PAD
-	MOV	X, #3 ; 7 for 15x15
-	MOV	Y, #3 ; 7 for 15x15
-	SETB UL
-;--------------------------------------TOMA DE DECICIONES LEYENDO P1
+START:
+	; Initialization
+	mov	SP, #5FH
+	; Define PPI ports A, B and C as outputs.
+	mov	A, #080H
+	; Load address of control register
+	mov	DPTR, #Reg_Control
+	; Configure PPI
+	; Add this when using 15x15 with PPI
+	; movX @DPTR, A
+
+
+	; Init pad positions
+	; PAD1 is Left pad
+	mov	PAD1, #1 ; #7
+	; max position is 12 for 15x15
+	mov	PAD2, #1 ; #8
+
+	mov	X, #3 ; #7
+	mov	Y, #3 ; #7
+	setb UL
+
+; MAIN game loop
 READ_PUERTO:
-	MOV A, SW				; Read input port
-	;CALL    delay_0_2		; lee el switch cada 0.2 segundos
-	ANL A, #0FH ; Apply Mask 00001111
-	MOV R7, A	; Make copy in R7 for comparisons
-	;CALL	CLEAR_VIDEO_MEMORY
-;--------------------------------------LOGICA DE LAS TABLETAS-----------------------------
-;Logica para  SUBE O BAJA PAD
+	; Read input port.
+	mov A, SW
+	; Read switch every 0.2 secs
+	; call    delay_0_2
+
+	; Apply mask 00001111b
+	anl A, #0FH
+	; Make copy in R7 for comparisons
+	mov R7, A
+
+; Update position of the pads according
+; to switch inputs
+; TODO: implement interrupts instead
+; for async updating
 PAD1_UP_DOWN:
-	JB UP_1, D1    ;UP_1 is the P1.0
-	JNB DOWN_1, PAD2_UP_DOWN
+	; UP_1 is the P1.0
+	jb UP_1, D1
+	jnb DOWN_1, PAD2_UP_DOWN
 	PAD_P PAD1, PAD_DN_LIMIT
 D1:
-	JB DOWN_1, PAD2_UP_DOWN
+	jb DOWN_1, PAD2_UP_DOWN
 	PAD_M PAD1, PAD_UP_LIMIT
 
 PAD2_UP_DOWN:
-	JB UP_2, D2
-	JNB DOWN_2, BALL_LOGIC
+	jb UP_2, D2
+	jnb DOWN_2, BALL_LOGIC
 	PAD_P PAD2, PAD_DN_LIMIT
 D2:
-	JB DOWN_2, BALL_LOGIC
+	jb DOWN_2, BALL_LOGIC
 	PAD_M PAD2, PAD_UP_LIMIT
-;--------------------------------------INICIA LOGICA de la bola-------------------------------------------------
+
+; Update position of the ball
 BALL_LOGIC:
-	MOV A, X				; DEBUG: Save X value
-	MOV P3, A				; DEBUG: Print in port 3
+	; DEBUG: Save X value
+	mov A, X
+	; DEBUG: Print in port 3
+	mov P3, A
 
-	OR_MACRO LEFT_BORDER, RIGHT_BORDER, X    ;X=0 OR X=14     ALGUIEN PERDIO?????
-	JB RESULT1, LOST
+	; x = 0? OR x = 14?     Alguien perdio?
+	OR_MACRO LEFT_BORDER, RIGHT_BORDER, X
+	jb RESULT1, LOST
 
-	OR_MACRO LEFT_PAD_ZONE, RIGHT_PAD_ZONE, X    ;X=1 OR X=13    LA bola esta en zona de paleta?????
-	JB RESULT1, ZONA_PALETA
+	; x = 1? OR x = 13? La bola esta en zona de paleta?
+	OR_MACRO LEFT_PAD_ZONE, RIGHT_PAD_ZONE, X
+	jb RESULT1, ZONA_PALETA
 
-	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y    ;y=1 OR y=15	LA bola esta en una pared???????????
-	JB RESULT1, CHOQUE_PARED
-	;La bola sigue su curso--------------
+	; y = 1? OR y = 15? La bola esta en una pared?
+	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
+	jb RESULT1, CHOQUE_PARED
+	; La bola sigue su curso
 IGUAL:
 
 ACTION:
-	; equivalent to a switch case where only at a time bit can be set UR, UL, DR, DL
-	JB UR, AUR_1
-	JB UL, AUL_1
-	JB DR, ADR_1
-	JB DL, ADL_1	; trying to be smart, you just create unreadable code, this line could be commented out, but makes more sense
-ADL_1:
-	DEC X
-	INC Y
-	;JMP	READ_PUERTO ; SKIP GRAPH LOGIC
-	JMP GRAFICO
-AUR_1:
-	INC X						;Lo incremento para ir a la derecha
-	DEC Y						;Lo decremento para  SUBIR
-	;JMP	READ_PUERTO ; SKIP GRAPH LOGIC
-	JMP GRAFICO
-AUL_1:
-	DEC X
-	DEC Y
-	;JMP	READ_PUERTO ; SKIP GRAPH LOGIC
-	JMP GRAFICO
-ADR_1:
-	INC X
-	INC Y
-	;JMP	READ_PUERTO ; SKIP GRAPH LOGIC
-	JMP GRAFICO ; again, don't try to be too smart, just include this line for clarity
+	; Equivalent to a switch case where
+	; only one bit at a time can be set UR, UL, DR, DL
+	jb UR, AUR_1
+	jb UL, AUL_1
+	jb DR, ADR_1
+	; Explicitly jump, don't waterfall.
+	jb DL, ADL_1
 
-;--------------------------------------Ramas de la logica-------------------------
+ADL_1:
+	dec X
+	inc Y
+	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	jmp GRAFICO
+AUR_1:
+	; Increment X to go right in matrix
+	inc X
+	; Decrement Y to go up in matrix
+	dec Y
+	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	jmp GRAFICO
+AUL_1:
+	dec X
+	dec Y
+	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	jmp GRAFICO
+ADR_1:
+	inc X
+	inc Y
+	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
+	jmp GRAFICO ; again, don't try to be too smart, just include this line for clarity
+
+; Ramas de la logica
 LOST:
-	JMP START
+	jmp START
 CHOQUE_PARED:
-	JBC UR, UR_1
-	JBC UL, UL_1
-	JBC DR, DR_1	; again, don't try to be too smart, just include this line, intead "falling" to the next part
-	JBC DL, DL_1
+	jbc UR, UR_1
+	jbc UL, UL_1
+	jbc DR, DR_1
+	jbc DL, DL_1
 DL_1:
-	CLR DL
-	SETB UL
-	JMP ACTION
+	clr DL
+	setb UL
+	jmp ACTION
 UR_1:
-	SETB DR
-	JMP ACTION
+	setb DR
+	jmp ACTION
 UL_1:
-	SETB DL
-	JMP ACTION
+	setb DL
+	jmp ACTION
 DR_1:
-	SETB UR
-	JMP ACTION
+	setb UR
+	jmp ACTION
 
 ZONA_PALETA:
-	;la logica mas compleja es la de la bola
-	MOV R2, X
-	CJNE R2, #LEFT_PAD_ZONE, PALETA_2	;cual es la paleta en cuestion
-	MOV P_T, PAD1
-	SJMP A70
+	; La logica mas compleja es la de la bola
+	mov R2, X
+	; Cual es la paleta en cuestion?
+	cjne R2, #LEFT_PAD_ZONE, PALETA_2
+	mov P_T, PAD1
+	sjmp A70
 PALETA_2:
-	MOV P_T, PAD2
+	mov P_T, PAD2
 A70:
-	;-------------
-	MOV A, P_T
-	SUBB A, #1
-	MOV R2, A				;R2 es mi P_minimo
-	MOV A_O, R2
+	mov A, P_T
+	subb A, #1
+	; R2 es mi P_minimo
+	mov R2, A
+	mov A_O, R2
 	; A_0 = P_T -1
-	ADD A, #5
-	MOV R3, A				;R3 es mi P_maximo
-	MOV B_O, R3
+	add A, #5
+	; R3 es mi P_maximo
+	mov R3, A
+	mov B_O, R3
 	; B_0 = A_0 + 5
-	MOV C_O, Y
-	CALL ESTA_RANGO
-	JNB RESULT2, ACTION			;si no esta en el rango, continuo sin rebotar
+	mov C_O, Y
+	call ESTA_RANGO
+	; Si no esta en el rango continuo sin rebotar.
+	jnb RESULT2, ACTION
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
-	JB RESULT1, A50			;es un caso especial?? Si, entonces rebote en la esquina
-	MOV C, DL
-	ORL C, DR
-	MOV DOWN, C				;la bola baja o	BIT	00100000			29H
-	MOV C, UL
-	ORL C, UR
-	MOV UP, C				;o sube			BIT 00010000		29H
-	MOV A, R2
-	CJNE A, Y, B90
-	SETB RESULT1
-	SJMP B80
+	; Es un caso especial?
+	; Si, entonces rebote en la esquina.
+	jb RESULT1, A50
+	mov C, DL
+	orl C, DR
+	; La bola baja o BIT 00100000 29H
+	mov DOWN, C
+	mov C, UL
+	orl C, UR
+	; o sube BIT 00010000 29H
+	mov UP, C
+	mov A, R2
+	cjne A, Y, B90
+	setb RESULT1
+	sjmp B80
 B90:
-	CLR RESULT1
+	clr RESULT1
 B80:
-	MOV C, RESULT1
-	ANL C, DOWN			; y==Pmin AND  DOWN=1  ??
-	MOV RESULT1, C				;condicion 1 se cumplio ?
-	MOV A, R3
-	CJNE A, Y, B70
-	SETB RESULT2
-	SJMP B60
+	mov C, RESULT1
+	; y == Pmin? AND  DOWN == 1?
+	anl C, DOWN
+	; Condicion 1 se cumplio?
+	mov RESULT1, C
+	mov A, R3
+	cjne A, Y, B70
+	setb RESULT2
+	sjmp B60
 B70:
-	CLR RESULT2
+	clr RESULT2
 B60:
-	MOV C, RESULT2
-	ANL C, UP				;y==Pmax AND  Up=1  ??
-	MOV RESULT2, C				;condicion 2 se cumplio ?
-	MOV C, RESULT1
-	ORL C, RESULT2
-	JC A50						;si las dos condiciones se cumplen, pego en la esquina de la paleta
-	JMP REBOTE_PALETA			;si no pego en plano
+	mov C, RESULT2
+	; y == Pmax? AND  UP == 1?
+	anl C, UP
+	; Condicion 2 se cumplio?
+	mov RESULT2, C
+	mov C, RESULT1
+	orl C, RESULT2
+	; si las dos condiciones se cumplen
+	; pego en la esquina de la paleta
+	jc A50
+	; Si no, pego en plano
+	jmp REBOTE_PALETA
 A50:
-	JMP REBOTE_ESQUINA
+	jmp REBOTE_ESQUINA
 
 REBOTE_ESQUINA:
-	JBC UR, UR_11
-	JBC UL, UL_11
-	JBC DR, DR_11
-	JBC DL, DL_11	; again, don't try to be too smart, just include this line, intead "falling" to the next part
+	jbc UR, UR_11
+	jbc UL, UL_11
+	jbc DR, DR_11
+	jbc DL, DL_11
 DL_11:
-	CLR DL
-	SETB UR
-	JMP ACTION
+	; not necessary now because using jbc DL, DL_11 clears it
+	clr DL
+	setb UR
+	jmp ACTION
 UR_11:
-	SETB DL
-	JMP ACTION
+	setb DL
+	jmp ACTION
 UL_11:
-	SETB DR
-	JMP ACTION
+	setb DR
+	jmp ACTION
 DR_11:
-	SETB UL
-	JMP ACTION
+	setb UL
+	jmp ACTION
+
 
 REBOTE_PALETA:
-	JBC UR, UR_12
-	JBC UL, UL_12
-	JBC DR, DR_12
-	JBC DL, DL_12		; again, don't try to be too smart, just include this line, intead "falling" to the next part
+	jbc UR, UR_12
+	jbc UL, UL_12
+	jbc DR, DR_12
+	jbc DL, DL_12
 DL_12:
-	CLR DL	; why only this one gets cleared? seems like a bug?
-	SETB DR
-	JMP ACTION
+	clr DL
+	setb DR
+	jmp ACTION
 UR_12:
-	SETB UL
-	JMP ACTION
+	setb UL
+	jmp ACTION
 UL_12:
-	SETB UR
-	JMP ACTION
+	setb UR
+	jmp ACTION
 DR_12:
-	SETB DL
-	JMP ACTION
+	setb DL
+	jmp ACTION
 
-;--------------------------------------Paso a graficar-------------------
 GRAFICO:
-    CALL CLEAR_VIDEO_MEMORY
-	; This is a 8 x 8 loop, of just display
-	CALL WRITE_VIDEO_MEMORY
-	MOV R1, #SPRITE_RENDER
+    call CLEAR_VIDEO_MEMORY
+	; This is a 8 x 8 loop of wrtting to PPI
+	call WRITE_VIDEO_MEMORY
+	mov R1, #SPRITE_RENDER
 Pause1a:
-	MOV R2, #SPRITE_RENDER
+	mov R2, #SPRITE_RENDER
 Pause2a:
-	CALL WRITE_TO_PPI
-	DJNZ R2, PAUSE2a
-	DJNZ R1, PAUSE1a
-	;CALL	DELAY_0_2
-	JMP READ_PUERTO    ; This complete the game loop
-;----------------------------------------------------------------------------
+	call WRITE_TO_PPI
+	djnz R2, PAUSE2a
+	djnz R1, PAUSE1a
+	;call	DELAY_0_2
 
-;----------------------------------------------------------------------------
+	; This complete the game loop
+	jmp READ_PUERTO
 
-;----------------------------------------------------------------------------
-
-
-;-------------------------------------------------------------------------------------------------
-;Seccion de Las tablas para los graficos
 
 	ORG 800H
+	; 'Sprites' of the ball
 LUT_BALL:
 	DB 0H, 80H, 40H, 20H, 10H, 8H, 4H, 2H, 1H, 0H, 0H, 0H, 0H, 0H, 0H, 0H
 
 	ORG 81EH
 LUT_BALL2:
 	DB 0H, 0H, 0H, 0H, 0H, 0H, 0H, 0H, 0H, 80H, 40H, 20H, 10H, 8H, 4H, 2H
-	;Uso esta tabla para mostrar la bola en la matriz
 
+	; 'Sprites' of the pads
 	ORG 900H
 LUT_PAD:
 	DB 0H, 0F0H, 78H, 3CH, 1EH, 0FH, 7H, 3H, 1H, 0H, 0H, 0H, 0H
