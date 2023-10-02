@@ -18,12 +18,23 @@ The project was built a round an LED matrix which was custom made. (My partner b
 
 https://www.youtube.com/watch?v=GOFcKyjivUg
 
+The 8051 is configured in external memory mode. The LED matrix was interfaced using a PPI (8255) to expand the number of outputs in the 8051.
+
+## Software.
+
+Written in Assembly. I still need to create a standard for the code to improve readability and maintainability.
+
+I'm trying to use VS Code to write the code, but I have conflicting formatting options with **8051 MCU IDE**. Tabs are 4 spaces.
+
 
 ### Current state
 
-Having enjoyed working on this project, I feel it a shame not to document it and even enhance it. While working on cleaning up the code I realized something. I got it to work then. But did a terribly job in writting maintainable code.
+Having enjoyed working on this project, I feel it a shame not to document it and even enhance it. While working on cleaning up the code I realized something. I got it to work then but, did a terribly job in writting maintainable code. Many things in the original version of the software were written in a haphazardly manner. So I started the refactoring by removing hard coded values for the dimmension of the matrix. Also separating the code into re-usable macros.
 
-Even though I don't have the original hardware. I found a way to simulate it. The downside is that the simulated matrix is only 8x8. So the project has lost its glorious 15x15 resolution.
+
+Even though I don't have the original hardware, I found a way to simulate it. The downside is that the simulated matrix is only 8x8. So the project has lost its glorious 15x15 resolution. And the simulation speed is very slow.
+
+
 
 Simulated version 8x8
 
