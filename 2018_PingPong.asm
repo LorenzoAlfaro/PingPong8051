@@ -111,22 +111,22 @@ DOWN_2 equ P1.3
 ; DL 00001000
 ; UP 00010000
 ; DN 00100000
-UR equ 48H
-UL equ 49H
-DR equ 4AH
-DL equ 4BH
-UP equ 4CH
-DOWN equ 4DH
+UR bit 48H
+UL bit 49H
+DR bit 4AH
+DL bit 4BH
+UP bit 4CH
+DOWN bit 4DH
 
 ; Address 0x2A, bit 0
 ; 00000001
-O1 equ 50H
+O1 bit 50H
 ; 00000010
-O2 equ 51H
+O2 bit 51H
 ; 00000100
-Result1 equ 52H
+Result1 bit 52H
 ; 00001000
-Result2 equ 53H
+Result2 bit 53H
 
 
 	ORG 0
@@ -148,13 +148,13 @@ START:
 RESET_:
 	; Init pad positions
 	; PAD1 is Left pad
-	mov	PAD1, #1 ; #7
+	mov	PAD1, #4 ; #7
 	; max position is 12 for 15x15
 	mov	PAD2, #1 ; #8
 
 	mov	X, #3 ; #7
 	mov	Y, #3 ; #7
-	setb UL
+	setb DR
 
 ; MAIN game loop
 READ_PORT_:
