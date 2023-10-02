@@ -245,24 +245,6 @@ ADR_1_:
 ; Ramas de la logica
 LOST_:
 	jmp START
-CHOQUE_PARED_:
-	; jbc clears the bit before the jump
-	jbc UR, UR_1_
-	jbc UL, UL_1_
-	jbc DR, DR_1_
-	jbc DL, DL_1_
-DL_1_:
-	setb UL
-	jmp ACTION_
-UR_1_:
-	setb DR
-	jmp ACTION_
-UL_1_:
-	setb DL
-	jmp ACTION_
-DR_1_:
-	setb UR
-	jmp ACTION_
 
 ZONA_PALETA_:
 	; La logica mas compleja es la de la bola
@@ -334,6 +316,25 @@ B60_:
 	jmp REBOTE_PALETA_
 A50_:
 	jmp REBOTE_ESQUINA_
+
+CHOQUE_PARED_:
+	; jbc clears the bit before the jump
+	jbc UR, UR_1_
+	jbc UL, UL_1_
+	jbc DR, DR_1_
+	jbc DL, DL_1_
+DL_1_:
+	setb UL
+	jmp ACTION_
+UR_1_:
+	setb DR
+	jmp ACTION_
+UL_1_:
+	setb DL
+	jmp ACTION_
+DR_1_:
+	setb UR
+	jmp ACTION_
 
 REBOTE_ESQUINA_:
 	jbc UR, UR_11_
