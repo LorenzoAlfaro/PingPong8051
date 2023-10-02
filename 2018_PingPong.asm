@@ -145,7 +145,7 @@ START:
 	; Add this when using 15x15 with PPI
 	; movX @DPTR, A
 
-
+RESET_:
 	; Init pad positions
 	; PAD1 is Left pad
 	mov	PAD1, #1 ; #7
@@ -238,7 +238,7 @@ ADR_1_:
 	jmp DRAW_DISPLAY_ ; again, don't try to be too smart, just include this line for clarity
 
 LOST_:
-	jmp START
+	jmp RESET_
 WALL_BOUNCE_:
 	; jbc clears the bit before the jump
 	jbc UR, UR_1_
