@@ -202,15 +202,15 @@ BALL_LOGIC_:
 
 	; x = 1? OR x = 13? La bola esta en zona de paleta?
 	OR_MACRO LEFT_PAD_ZONE, RIGHT_PAD_ZONE, X
-	jb RESULT1, ZONA_PALETA_
+	jb RESULT1, PAD_ZONE_
 
 	; y = 1? OR y = 15? La bola esta en una pared?
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
-	jb RESULT1, CHOQUE_PARED_
+	jb RESULT1, WALL_BOUNCE_
 	; La bola sigue su curso
 IGUAL:
 
-ACTION_:
+UPDATE_BALL_POSITION_:
 	; Equivalent to a switch case where
 	; only one bit at a time can be set UR, UL, DR, DL
 	jb UR, AUR_1_
@@ -222,30 +222,26 @@ ACTION_:
 ADL_1_:
 	dec X
 	inc Y
-	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO_
+	jmp DRAW_DISPLAY_
 AUR_1_:
 	; Increment X to go right in matrix
 	inc X
 	; Decrement Y to go up in matrix
 	dec Y
-	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO_
+	jmp DRAW_DISPLAY_
 AUL_1_:
 	dec X
 	dec Y
-	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO_
+	jmp DRAW_DISPLAY_
 ADR_1_:
 	inc X
 	inc Y
-	;jmp	READ_PORT_ ; SKIP GRAPH LOGIC
-	jmp GRAFICO_ ; again, don't try to be too smart, just include this line for clarity
+	jmp DRAW_DISPLAY_ ; again, don't try to be too smart, just include this line for clarity
 
 ; Ramas de la logica
 LOST_:
 	jmp START
-CHOQUE_PARED_:
+WALL_BOUNCE_:
 	; jbc clears the bit before the jump
 	jbc UR, UR_1_
 	jbc UL, UL_1_
@@ -253,18 +249,18 @@ CHOQUE_PARED_:
 	jbc DL, DL_1_
 DL_1_:
 	setb UL
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 UR_1_:
 	setb DR
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 UL_1_:
 	setb DL
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 DR_1_:
 	setb UR
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 
-ZONA_PALETA_:
+PAD_ZONE_:
 	; La logica mas compleja es la de la bola
 	mov R2, X
 	; Cual es la paleta en cuestion?
@@ -288,7 +284,7 @@ A70_:
 	mov C_O, Y
 	call ESTA_RANGO
 	; Si no esta en el rango continuo sin rebotar.
-	jnb RESULT2, ACTION_
+	jnb RESULT2, UPDATE_BALL_POSITION_
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
 	; Es un caso especial?
 	; Si, entonces rebote en la esquina.
@@ -331,11 +327,11 @@ B60_:
 	; pego en la esquina de la paleta
 	jc A50_
 	; Si no, pego en plano
-	jmp REBOTE_PALETA_
+	jmp PAD_BOUNCE_
 A50_:
-	jmp REBOTE_ESQUINA_
+	jmp CORNER_BOUNCE_
 
-REBOTE_ESQUINA_:
+CORNER_BOUNCE_:
 	jbc UR, UR_11_
 	jbc UL, UL_11_
 	jbc DR, DR_11_
@@ -343,19 +339,19 @@ REBOTE_ESQUINA_:
 DL_11_:
 	; not necessary now because using jbc DL, DL_11_ clears it
 	setb UR
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 UR_11_:
 	setb DL
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 UL_11_:
 	setb DR
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 DR_11_:
 	setb UL
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 
 
-REBOTE_PALETA_:
+PAD_BOUNCE_:
 	jbc UR, UR_12_
 	jbc UL, UL_12_
 	jbc DR, DR_12_
@@ -363,18 +359,18 @@ REBOTE_PALETA_:
 	; jbc clears the bit before the jump
 DL_12_:
 	setb DR
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 UR_12_:
 	setb UL
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 UL_12_:
 	setb UR
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 DR_12_:
 	setb DL
-	jmp ACTION_
+	jmp UPDATE_BALL_POSITION_
 
-GRAFICO_:
+DRAW_DISPLAY_:
     call CLEAR_VIDEO_MEMORY
 	; This is a 8 x 8 loop of wrtting to PPI
 	call WRITE_VIDEO_MEMORY
