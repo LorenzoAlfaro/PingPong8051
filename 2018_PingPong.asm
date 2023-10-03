@@ -37,6 +37,7 @@ ENDM
 ; Number of times game is rendered
 SPRITE_RENDER equ 1
 PAD_SIZE equ 4
+PAD_CORNER equ PAD_SIZE + 1
 TAM_X equ 8 ; 15
 ; TODO TAM_X and TAM_Y should be the same!
 TAM_Y equ 9 ; 16
@@ -137,16 +138,16 @@ Result2 bit 53H
 START:
 	; Initialization
 	mov	SP, #5FH
-	; Define PPI ports A, B and C as outputs.
 	mov	A, #080H
 	; Load address of control register
 	mov	DPTR, #Reg_Control
 	; Configure PPI
+	; Define PPI ports A, B and C as outputs.
 	; Add this when using 15x15 with PPI
 	; movX @DPTR, A
 
 RESET_:
-	; Init pad positions
+	; Set pad positions
 	; PAD1 is Left pad
 	mov	PAD1, #4 ; #7
 	; max position is 12 for 15x15
@@ -191,18 +192,23 @@ D2_:
 
 BALL_LOGIC_:
 
-	; x = 0? OR x = 14?     Alguien perdio?
 	OR_MACRO LEFT_BORDER, RIGHT_BORDER, X
 	jb RESULT1, LOST_
+	; if x == 0 or x == 14
+	; 	goto LOST_
 
-	; x = 1? OR x = 13? La bola esta en zona de paleta?
+
 	OR_MACRO LEFT_PAD_ZONE, RIGHT_PAD_ZONE, X
 	jb RESULT1, PAD_ZONE_
+	; if x == 1 or x == 13
+	; 	goto PAD_ZONE_
 
-	; y = 1? OR y = 15? La bola esta en una pared?
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
 	jb RESULT1, WALL_BOUNCE_
-	; Ball continues its course.
+	; if y == 1 or y == 15
+	; 	goto WALL_BOUNCE_
+	; else
+	; 	goto UPDATE_BALL_POSITION_
 IGUAL:
 
 UPDATE_BALL_POSITION_:
@@ -211,8 +217,8 @@ UPDATE_BALL_POSITION_:
 	jb UR, AUR_1_
 	jb UL, AUL_1_
 	jb DR, ADR_1_
-	; Explicitly jump, don't waterfall.
 	jb DL, ADL_1_
+	; Explicitly jump, don't waterfall.
 
 ADL_1_:
 	dec X
@@ -231,7 +237,7 @@ AUL_1_:
 ADR_1_:
 	inc X
 	inc Y
-	jmp DRAW_DISPLAY_ ; again, don't try to be too smart, just include this line for clarity
+	jmp DRAW_DISPLAY_
 
 LOST_:
 	jmp RESET_
@@ -256,22 +262,22 @@ DR_1_:
 
 PAD_ZONE_:
 	mov R2, X
-	cjne R2, #LEFT_PAD_ZONE, PALETA_2_
+	cjne R2, #LEFT_PAD_ZONE, A40_
 	mov P_T, PAD1
 	sjmp A70_
-PALETA_2_:
+A40_:
 	mov P_T, PAD2
-
 	; if ball_x == LEFT_PAD_ZONE
 	;	P_T = PAD1_Y
 	; else
 	;	P_T = PAD2_Y
+
 A70_:
 	mov A, P_T
 	subb A, #1 ; this is why Y starts with 1, not 0, to not deal with negative numbers
 	mov R2, A
 	mov A_O, R2
-	add A, #5
+	add A, #PAD_CORNER
 	mov R3, A
 	mov B_O, R3
 	mov C_O, Y
@@ -279,11 +285,11 @@ A70_:
 	jnb RESULT2, UPDATE_BALL_POSITION_
 	; R2 es mi Pad_Y0
 	; R3 es mi Pad_Y1
-	;
+
 	; A_O = P_T - 1
 	; B_O = A_0 + 5
 	; if Y > P_maximo or Y < P_minimo
-	;	goto UPDATE_BALL_POSITION_ // No bounce needs to be calculate
+	;	goto UPDATE_BALL_POSITION_ // No bounce needs to be calculated
 
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
 	jb RESULT1, A50_
@@ -301,7 +307,8 @@ A70_:
 	orl C, UR
 	mov UP, C
 
-	; set UP/DOWN flags, only should be true
+	; set UP/DOWN flags, only one should be true
+
 	; if ball going up-right or up-down?
 	; 	UP = 1;
 	; if ball going down-right or down-down?
@@ -365,7 +372,6 @@ CORNER_BOUNCE_:
 	jbc DR, DR_11_
 	jbc DL, DL_11_
 DL_11_:
-	; not necessary now because using jbc DL, DL_11_ clears it
 	setb UR
 	jmp UPDATE_BALL_POSITION_
 UR_11_:
