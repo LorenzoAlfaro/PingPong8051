@@ -190,10 +190,6 @@ D2_:
 	PAD_UP_MACRO PAD2, PAD_UP_LIMIT
 
 BALL_LOGIC_:
-	; DEBUG: Save X value
-	mov A, X
-	; DEBUG: Print in port 3
-	mov P3, A
 
 	; x = 0? OR x = 14?     Alguien perdio?
 	OR_MACRO LEFT_BORDER, RIGHT_BORDER, X
@@ -206,7 +202,7 @@ BALL_LOGIC_:
 	; y = 1? OR y = 15? La bola esta en una pared?
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
 	jb RESULT1, WALL_BOUNCE_
-	; La bola sigue su curso
+	; Ball continues its course.
 IGUAL:
 
 UPDATE_BALL_POSITION_:
