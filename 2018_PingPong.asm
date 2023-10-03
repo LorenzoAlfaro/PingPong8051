@@ -14,6 +14,8 @@ xyz:
 zyx:
 
 ENDM
+; if R2 != LIMIT
+;	PAD_A--
 
 
 PAD_DOWN_MACRO MACRO PAD_A, LIMIT
@@ -27,6 +29,8 @@ xyz:
 zyx:
 
 ENDM
+; if R2 != LIMIT
+;	PAD_A++
 
 
 ; PING PONG (8051) by LORENZO ALFARO
@@ -173,16 +177,16 @@ READ_PORT_:
 ; to switch inputs
 ; TODO: implement interrupts instead
 ; for async updating
-PAD1_UP_DOWN_:
+PAD_1_DIRECTION_:
 	; UP_1 is the P1.0
 	jb UP_1, D1_
-	jnb DOWN_1, PAD2_UP_DOWN_
+	jnb DOWN_1, PAD_2_DIRECTION_
 	PAD_DOWN_MACRO PAD1, PAD_DN_LIMIT
 D1_:
-	jb DOWN_1, PAD2_UP_DOWN_
+	jb DOWN_1, PAD_2_DIRECTION_
 	PAD_UP_MACRO PAD1, PAD_UP_LIMIT
 
-PAD2_UP_DOWN_:
+PAD_2_DIRECTION_:
 	jb UP_2, D2_
 	jnb DOWN_2, BALL_LOGIC_
 	PAD_DOWN_MACRO PAD2, PAD_DN_LIMIT
@@ -241,6 +245,7 @@ ADR_1_:
 
 LOST_:
 	jmp RESET_
+
 WALL_BOUNCE_:
 	; jbc clears the bit before the jump
 	jbc UR, UR_1_
@@ -309,10 +314,10 @@ A70_:
 
 	; set UP/DOWN flags, only one should be true
 
-	; if ball going up-right or up-down?
-	; 	UP = 1;
-	; if ball going down-right or down-down?
-	; 	DOWN = 1;
+	; if ball's direction is up-right or up-left?
+	; 	UP = 1
+	; if ball's direction is down-right or down-left?
+	; 	DOWN = 1
 
 	; BUG: I'm not clearing UP or DOWN after each run
 
