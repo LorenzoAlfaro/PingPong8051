@@ -57,11 +57,11 @@ PAD_DN_LIMIT equ TAM_Y - PAD_SIZE
 ; PPI Ports addresses,
 ; Use movx to write/read to the PPI 8255
 ; PPI port addresses (use external memory mode)
-PORT_A equ 02000H
-PORT_B equ 02001H
-PORT_C equ 02002H
+PORT_A code 02000H
+PORT_B code 02001H
+PORT_C code 02002H
 ; Write to this register to configure PPI
-Reg_Control equ	02003H
+Reg_Control code 02003H
 
 
 ; Variable definitions:
@@ -88,19 +88,19 @@ MEMORIAVIDEO2 equ 50H
 ;MemoriaViDEOA equ 41H
 ;MemoriaVIDEO2A equ 51H
 
-ADRE_PAD1A equ MEMORIAVIDEO
-ADRE_PAD1B equ MEMORIAVIDEO2
+ADRE_PAD1A data MEMORIAVIDEO
+ADRE_PAD1B data MEMORIAVIDEO2
 
 ; 4EH for size 15x15
-ADRE_PAD2A equ ADRE_PAD1A + TAM_X - 1
+ADRE_PAD2A data ADRE_PAD1A + TAM_X - 1
 ; 5EH for size 15x15
-ADRE_PAD2B equ ADRE_PAD1B + TAM_X - 1
+ADRE_PAD2B data ADRE_PAD1B + TAM_X - 1
 
-SW equ P1
-UP_1 equ P1.0
-UP_2 equ P1.2
-DOWN_1 equ P1.1
-DOWN_2 equ P1.3
+SW data P1
+UP_1 bit P1.0
+UP_2 bit P1.2
+DOWN_1 bit P1.1
+DOWN_2 bit P1.3
 
 ; RAM 0x29 (byte address) stores ball direction
 ; Only 1 bit is on at all times
