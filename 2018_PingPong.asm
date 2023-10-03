@@ -3,7 +3,7 @@ include logicfunctions.asm
 
 
 ; TODO: Validate pad is not in the border
-PAD_M MACRO PAD_A, LIMIT
+PAD_UP_MACRO MACRO PAD_A, LIMIT
         LOCAL xyz
         LOCAL zyx
 	mov	R2, PAD_A
@@ -14,9 +14,11 @@ xyz:
 zyx:
 
 ENDM
+; if R2 != LIMIT
+;	PAD_A--
 
 
-PAD_P MACRO PAD_A, LIMIT
+PAD_DOWN_MACRO MACRO PAD_A, LIMIT
         LOCAL xyz
         LOCAL zyx
 	mov	R2, PAD_A
@@ -27,6 +29,8 @@ xyz:
 zyx:
 
 ENDM
+; if R2 != LIMIT
+;	PAD_A++
 
 
 ; PING PONG (8051) by LORENZO ALFARO
@@ -37,6 +41,7 @@ ENDM
 ; Number of times game is rendered
 SPRITE_RENDER equ 1
 PAD_SIZE equ 4
+PAD_CORNER equ PAD_SIZE + 1
 TAM_X equ 8 ; 15
 ; TODO TAM_X and TAM_Y should be the same!
 TAM_Y equ 9 ; 16
@@ -57,11 +62,11 @@ PAD_DN_LIMIT equ TAM_Y - PAD_SIZE
 ; PPI Ports addresses,
 ; Use movx to write/read to the PPI 8255
 ; PPI port addresses (use external memory mode)
-PORT_A equ 02000H
-PORT_B equ 02001H
-PORT_C equ 02002H
+PORT_A code 02000H
+PORT_B code 02001H
+PORT_C code 02002H
 ; Write to this register to configure PPI
-Reg_Control equ	02003H
+Reg_Control code 02003H
 
 
 ; Variable definitions:
@@ -88,21 +93,21 @@ MEMORIAVIDEO2 equ 50H
 ;MemoriaViDEOA equ 41H
 ;MemoriaVIDEO2A equ 51H
 
-ADRE_PAD1A equ MEMORIAVIDEO
-ADRE_PAD1B equ MEMORIAVIDEO2
+ADRE_PAD1A data MEMORIAVIDEO
+ADRE_PAD1B data MEMORIAVIDEO2
 
 ; 4EH for size 15x15
-ADRE_PAD2A equ ADRE_PAD1A + TAM_X - 1
+ADRE_PAD2A data ADRE_PAD1A + TAM_X - 1
 ; 5EH for size 15x15
-ADRE_PAD2B equ ADRE_PAD1B + TAM_X - 1
+ADRE_PAD2B data ADRE_PAD1B + TAM_X - 1
 
-SW equ P1
-UP_1 equ P1.0
-UP_2 equ P1.2
-DOWN_1 equ P1.1
-DOWN_2 equ P1.3
+SW data P1
+UP_1 bit P1.0
+UP_2 bit P1.2
+DOWN_1 bit P1.1
+DOWN_2 bit P1.3
 
-; RAM 0x29 stores ball direction
+; RAM 0x29 (byte address) stores ball direction
 ; Only 1 bit is on at all times
 ; I think there is a bug here
 ; UR 00000001
@@ -111,22 +116,22 @@ DOWN_2 equ P1.3
 ; DL 00001000
 ; UP 00010000
 ; DN 00100000
-UR equ 48H
-UL equ 49H
-DR equ 4AH
-DL equ 4BH
-UP equ 4CH
-DOWN equ 4DH
+UR bit 48H
+UL bit 49H
+DR bit 4AH
+DL bit 4BH
+UP bit 4CH
+DOWN bit 4DH
 
 ; Address 0x2A, bit 0
 ; 00000001
-O1 equ 50H
+O1 bit 50H
 ; 00000010
-O2 equ 51H
+O2 bit 51H
 ; 00000100
-Result1 equ 52H
+Result1 bit 52H
 ; 00001000
-Result2 equ 53H
+Result2 bit 53H
 
 
 	ORG 0
@@ -137,27 +142,27 @@ Result2 equ 53H
 START:
 	; Initialization
 	mov	SP, #5FH
-	; Define PPI ports A, B and C as outputs.
 	mov	A, #080H
 	; Load address of control register
 	mov	DPTR, #Reg_Control
 	; Configure PPI
+	; Define PPI ports A, B and C as outputs.
 	; Add this when using 15x15 with PPI
 	; movX @DPTR, A
 
-
-	; Init pad positions
+RESET_:
+	; Set pad positions
 	; PAD1 is Left pad
-	mov	PAD1, #1 ; #7
+	mov	PAD1, #4 ; #7
 	; max position is 12 for 15x15
 	mov	PAD2, #1 ; #8
 
 	mov	X, #3 ; #7
 	mov	Y, #3 ; #7
-	setb UL
+	setb DR
 
 ; MAIN game loop
-READ_PUERTO:
+READ_PORT_:
 	; Read input port.
 	mov A, SW
 	; Read switch every 0.2 secs
@@ -172,224 +177,253 @@ READ_PUERTO:
 ; to switch inputs
 ; TODO: implement interrupts instead
 ; for async updating
-PAD1_UP_DOWN:
+PAD_1_DIRECTION_:
 	; UP_1 is the P1.0
-	jb UP_1, D1
-	jnb DOWN_1, PAD2_UP_DOWN
-	PAD_P PAD1, PAD_DN_LIMIT
-D1:
-	jb DOWN_1, PAD2_UP_DOWN
-	PAD_M PAD1, PAD_UP_LIMIT
+	jb UP_1, D1_
+	jnb DOWN_1, PAD_2_DIRECTION_
+	PAD_DOWN_MACRO PAD1, PAD_DN_LIMIT
+D1_:
+	jb DOWN_1, PAD_2_DIRECTION_
+	PAD_UP_MACRO PAD1, PAD_UP_LIMIT
 
-PAD2_UP_DOWN:
-	jb UP_2, D2
-	jnb DOWN_2, BALL_LOGIC
-	PAD_P PAD2, PAD_DN_LIMIT
-D2:
-	jb DOWN_2, BALL_LOGIC
-	PAD_M PAD2, PAD_UP_LIMIT
+PAD_2_DIRECTION_:
+	jb UP_2, D2_
+	jnb DOWN_2, BALL_LOGIC_
+	PAD_DOWN_MACRO PAD2, PAD_DN_LIMIT
+D2_:
+	jb DOWN_2, BALL_LOGIC_
+	PAD_UP_MACRO PAD2, PAD_UP_LIMIT
 
-; Update position of the ball
-BALL_LOGIC:
-	; DEBUG: Save X value
-	mov A, X
-	; DEBUG: Print in port 3
-	mov P3, A
+BALL_LOGIC_:
 
-	; x = 0? OR x = 14?     Alguien perdio?
 	OR_MACRO LEFT_BORDER, RIGHT_BORDER, X
-	jb RESULT1, LOST
+	jb RESULT1, LOST_
+	; if x == 0 or x == 14
+	; 	goto LOST_
 
-	; x = 1? OR x = 13? La bola esta en zona de paleta?
+
 	OR_MACRO LEFT_PAD_ZONE, RIGHT_PAD_ZONE, X
-	jb RESULT1, ZONA_PALETA
+	jb RESULT1, PAD_ZONE_
+	; if x == 1 or x == 13
+	; 	goto PAD_ZONE_
 
-	; y = 1? OR y = 15? La bola esta en una pared?
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
-	jb RESULT1, CHOQUE_PARED
-	; La bola sigue su curso
+	jb RESULT1, WALL_BOUNCE_
+	; if y == 1 or y == 15
+	; 	goto WALL_BOUNCE_
+	; else
+	; 	goto UPDATE_BALL_POSITION_
 IGUAL:
 
-ACTION:
+UPDATE_BALL_POSITION_:
 	; Equivalent to a switch case where
 	; only one bit at a time can be set UR, UL, DR, DL
-	jb UR, AUR_1
-	jb UL, AUL_1
-	jb DR, ADR_1
+	jb UR, AUR_1_
+	jb UL, AUL_1_
+	jb DR, ADR_1_
+	jb DL, ADL_1_
 	; Explicitly jump, don't waterfall.
-	jb DL, ADL_1
 
-ADL_1:
+ADL_1_:
 	dec X
 	inc Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
-	jmp GRAFICO
-AUR_1:
+	jmp DRAW_DISPLAY_
+AUR_1_:
 	; Increment X to go right in matrix
 	inc X
 	; Decrement Y to go up in matrix
 	dec Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
-	jmp GRAFICO
-AUL_1:
+	jmp DRAW_DISPLAY_
+AUL_1_:
 	dec X
 	dec Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
-	jmp GRAFICO
-ADR_1:
+	jmp DRAW_DISPLAY_
+ADR_1_:
 	inc X
 	inc Y
-	;jmp	READ_PUERTO ; SKIP GRAPH LOGIC
-	jmp GRAFICO ; again, don't try to be too smart, just include this line for clarity
+	jmp DRAW_DISPLAY_
 
-; Ramas de la logica
-LOST:
-	jmp START
-CHOQUE_PARED:
-	jbc UR, UR_1
-	jbc UL, UL_1
-	jbc DR, DR_1
-	jbc DL, DL_1
-DL_1:
-	clr DL
+LOST_:
+	jmp RESET_
+
+WALL_BOUNCE_:
+	; jbc clears the bit before the jump
+	jbc UR, UR_1_
+	jbc UL, UL_1_
+	jbc DR, DR_1_
+	jbc DL, DL_1_
+DL_1_:
 	setb UL
-	jmp ACTION
-UR_1:
+	jmp UPDATE_BALL_POSITION_
+UR_1_:
 	setb DR
-	jmp ACTION
-UL_1:
+	jmp UPDATE_BALL_POSITION_
+UL_1_:
 	setb DL
-	jmp ACTION
-DR_1:
+	jmp UPDATE_BALL_POSITION_
+DR_1_:
 	setb UR
-	jmp ACTION
+	jmp UPDATE_BALL_POSITION_
 
-ZONA_PALETA:
-	; La logica mas compleja es la de la bola
+PAD_ZONE_:
 	mov R2, X
-	; Cual es la paleta en cuestion?
-	cjne R2, #LEFT_PAD_ZONE, PALETA_2
+	cjne R2, #LEFT_PAD_ZONE, A40_
 	mov P_T, PAD1
-	sjmp A70
-PALETA_2:
+	sjmp A70_
+A40_:
 	mov P_T, PAD2
-A70:
+	; if ball_x == LEFT_PAD_ZONE
+	;	P_T = PAD1_Y
+	; else
+	;	P_T = PAD2_Y
+
+A70_:
 	mov A, P_T
-	subb A, #1
-	; R2 es mi P_minimo
+	subb A, #1 ; this is why Y starts with 1, not 0, to not deal with negative numbers
 	mov R2, A
 	mov A_O, R2
-	; A_0 = P_T -1
-	add A, #5
-	; R3 es mi P_maximo
+	add A, #PAD_CORNER
 	mov R3, A
 	mov B_O, R3
-	; B_0 = A_0 + 5
 	mov C_O, Y
 	call ESTA_RANGO
-	; Si no esta en el rango continuo sin rebotar.
-	jnb RESULT2, ACTION
+	jnb RESULT2, UPDATE_BALL_POSITION_
+	; R2 es mi Pad_Y0
+	; R3 es mi Pad_Y1
+
+	; A_O = P_T - 1
+	; B_O = A_0 + 5
+	; if Y > P_maximo or Y < P_minimo
+	;	goto UPDATE_BALL_POSITION_ // No bounce needs to be calculated
+
 	OR_MACRO UP_WALL_ZONE, DN_WALL_ZONE, Y
-	; Es un caso especial?
-	; Si, entonces rebote en la esquina.
-	jb RESULT1, A50
+	jb RESULT1, A50_
+	; if Y == TOP or Y == BOTTOM
+	;	goto corner_bounce
+
+	; ORL does a bitwise "OR" operation between operand1 and operand2,
+	; leaving the resulting value in operand1.
+
 	mov C, DL
 	orl C, DR
-	; La bola baja o BIT 00100000 29H
 	mov DOWN, C
+
 	mov C, UL
 	orl C, UR
-	; o sube BIT 00010000 29H
 	mov UP, C
+
+	; set UP/DOWN flags, only one should be true
+
+	; if ball's direction is up-right or up-left?
+	; 	UP = 1
+	; if ball's direction is down-right or down-left?
+	; 	DOWN = 1
+
+	; BUG: I'm not clearing UP or DOWN after each run
+
+
+	; ANL does a bitwise "AND" operation between operand1 and operand2,
+	; leaving the resulting value in operand1.
+
+; Calculate flag1
 	mov A, R2
-	cjne A, Y, B90
+	cjne A, Y, B90_
 	setb RESULT1
-	sjmp B80
-B90:
+	sjmp B80_
+B90_:
 	clr RESULT1
-B80:
+B80_:
+	; if Y == Pad_Y0 and DOWN == 1
+	;	set flag1
+	; else
+	;	clear flag1
 	mov C, RESULT1
-	; y == Pmin? AND  DOWN == 1?
 	anl C, DOWN
-	; Condicion 1 se cumplio?
 	mov RESULT1, C
+; Calculate flag2
 	mov A, R3
-	cjne A, Y, B70
+	cjne A, Y, B70_
 	setb RESULT2
-	sjmp B60
-B70:
+	sjmp B60_
+B70_:
 	clr RESULT2
-B60:
+B60_:
+	; if Y == Pad_Y1 and UP == 1
+	;	set flag2
+	; else
+	;	clear flag2
 	mov C, RESULT2
-	; y == Pmax? AND  UP == 1?
 	anl C, UP
-	; Condicion 2 se cumplio?
 	mov RESULT2, C
+
+; or both flags
+
 	mov C, RESULT1
 	orl C, RESULT2
-	; si las dos condiciones se cumplen
-	; pego en la esquina de la paleta
-	jc A50
-	; Si no, pego en plano
-	jmp REBOTE_PALETA
-A50:
-	jmp REBOTE_ESQUINA
+	jc A50_
 
-REBOTE_ESQUINA:
-	jbc UR, UR_11
-	jbc UL, UL_11
-	jbc DR, DR_11
-	jbc DL, DL_11
-DL_11:
-	; not necessary now because using jbc DL, DL_11 clears it
-	clr DL
+	jmp PAD_BOUNCE_
+A50_:
+	jmp CORNER_BOUNCE_
+
+	; if flag1 or flag2
+	; 	goto CORNER_BOUNCE
+	; else
+	;	goto PAD_BOUNCE
+
+CORNER_BOUNCE_:
+	jbc UR, UR_11_
+	jbc UL, UL_11_
+	jbc DR, DR_11_
+	jbc DL, DL_11_
+DL_11_:
 	setb UR
-	jmp ACTION
-UR_11:
+	jmp UPDATE_BALL_POSITION_
+UR_11_:
 	setb DL
-	jmp ACTION
-UL_11:
+	jmp UPDATE_BALL_POSITION_
+UL_11_:
 	setb DR
-	jmp ACTION
-DR_11:
+	jmp UPDATE_BALL_POSITION_
+DR_11_:
 	setb UL
-	jmp ACTION
+	jmp UPDATE_BALL_POSITION_
 
 
-REBOTE_PALETA:
-	jbc UR, UR_12
-	jbc UL, UL_12
-	jbc DR, DR_12
-	jbc DL, DL_12
-DL_12:
-	clr DL
+PAD_BOUNCE_:
+	jbc UR, UR_12_
+	jbc UL, UL_12_
+	jbc DR, DR_12_
+	jbc DL, DL_12_
+	; jbc clears the bit before the jump
+DL_12_:
 	setb DR
-	jmp ACTION
-UR_12:
+	jmp UPDATE_BALL_POSITION_
+UR_12_:
 	setb UL
-	jmp ACTION
-UL_12:
+	jmp UPDATE_BALL_POSITION_
+UL_12_:
 	setb UR
-	jmp ACTION
-DR_12:
+	jmp UPDATE_BALL_POSITION_
+DR_12_:
 	setb DL
-	jmp ACTION
+	jmp UPDATE_BALL_POSITION_
 
-GRAFICO:
+DRAW_DISPLAY_:
     call CLEAR_VIDEO_MEMORY
 	; This is a 8 x 8 loop of wrtting to PPI
 	call WRITE_VIDEO_MEMORY
 	mov R1, #SPRITE_RENDER
-Pause1a:
+PAUSE1a_:
 	mov R2, #SPRITE_RENDER
-Pause2a:
+PAUSE2a_:
 	call WRITE_TO_PPI
-	djnz R2, PAUSE2a
-	djnz R1, PAUSE1a
+	djnz R2, PAUSE2a_
+	djnz R1, PAUSE1a_
 	;call	DELAY_0_2
 
 	; This complete the game loop
-	jmp READ_PUERTO
+	jmp READ_PORT_
 
 
 	ORG 800H
