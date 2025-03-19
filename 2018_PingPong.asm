@@ -40,7 +40,7 @@ ENDM
 
 ; Number of times game is rendered
 SPRITE_RENDER equ 1
-PAD_SIZE equ 4
+PAD_SIZE equ 8
 PAD_CORNER equ PAD_SIZE + 1
 TAM_X equ 8 ; 15
 ; TODO TAM_X and TAM_Y should be the same!
@@ -153,7 +153,7 @@ START:
 RESET_:
 	; Set pad positions
 	; PAD1 is Left pad
-	mov	PAD1, #4 ; #7
+	mov	PAD1, #1 ; #7
 	; max position is 12 for 15x15
 	mov	PAD2, #1 ; #8
 
