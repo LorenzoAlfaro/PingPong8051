@@ -19,3 +19,8 @@
 *.ihx
 *.gpio
 *.vhc~
+
+# Python (emulator/)
+__pycache__/
+*.pyc
+.pytest_cache/
